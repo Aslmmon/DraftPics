@@ -1,21 +1,19 @@
 // lib/home_screen_ui.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:reutilizacao/ui/components/AppButton.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
+import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
 
 import 'BottomSheetTeam.dart';
 import 'controllers/home_controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
-  // Renamed back to HomeScreenUI for consistency with previous responses
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-
-    // Controllers and keys needed for the bottom sheet
-    // These are initialized here because their lifecycle is tied to the BottomSheet
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return Scaffold(
@@ -37,12 +35,8 @@ class HomeScreen extends GetView<HomeController> {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                // Allows the sheet to take up more space if keyboard appears
                 useRootNavigator: true,
-                // Prevents issues with nested navigators
-                builder: (context) {
-                  return AddTeamBottomSheet(formKey: formKey);
-                },
+                builder: (context) => AddTeamBottomSheet(),
               );
             },
           ),
@@ -106,7 +100,7 @@ class HomeScreen extends GetView<HomeController> {
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 itemCount: controller.filteredTeams.length,
                 itemBuilder: (context, index) {
                   final team = controller.filteredTeams[index];
@@ -133,25 +127,46 @@ class HomeScreen extends GetView<HomeController> {
                             // --- Refined Image/Icon Display ---
                             Image.asset('images/team_image.png'),
                             const SizedBox(width: 16),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  team.name,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    team.name,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  // --- Using team.playerCount ---
-                                  '${team.players.length} players',
-                                  // Assuming 'playerCount' is available in your Team model
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey,
+                                  Text(
+                                    // --- Using team.playerCount ---
+                                    '${team.players.length} players',
+                                    // Assuming 'playerCount' is available in your Team model
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                ReusableAlertDialog.show(
+                                  title: 'Delete Team?',
+                                  content:
+                                      'Are you sure you want to delete this team ? \n This action cannot be undone.',
+                                  yesText: 'Delete',
+                                  noText: 'Cancel',
+                                  onYesPressed: () {
+                                    controller.deleteTeam(team);
+                                    Get.back();
+                                  },
+                                  onNoPressed: () {
+                                    Get.back();
+                                  },
+                                );
+                              },
+                              icon: Icon(Icons.delete_forever_outlined),
                             ),
                           ],
                         ),

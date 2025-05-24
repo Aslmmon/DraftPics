@@ -421,7 +421,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "260867e7104a6e59b12fdc518bf7a4dff272c0a6"
+      resolved-ref: "93b97438ef0d26b028b2820524dfcc610b3c7069"
       url: "https://github.com/Aslmmon/Reusable_Kit"
     source: git
     version: "1.0.0+1"

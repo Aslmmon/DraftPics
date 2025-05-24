@@ -73,12 +73,10 @@ class HomeController extends GetxController {
     }
   }
 
-  // Method to filter teams based on search query
   void _filterTeams() {
     if (searchQuery.value.isEmpty) {
       filteredTeams.value = allTeams; // If empty, show all teams
     } else {
-      // Filter teams where name contains the search query (case-insensitive)
       filteredTeams.value =
           allTeams.where((team) {
             return team.name.toLowerCase().contains(
@@ -88,16 +86,11 @@ class HomeController extends GetxController {
     }
   }
 
-  void goToTeamDetails(Team team) {
-    Get.toNamed(AppRoutes.teamDetails, arguments: team);
-  }
+  void goToTeamDetails(Team team) =>
+      Get.toNamed(AppRoutes.teamDetails, arguments: team);
 
-  // Method for navigating to Add Team (if you create that screen)
-  void goToAddTeam() {
-    print('Navigate to Add Team screen');
 
-    // Get.toNamed(AppRoutes.addTeam); // Example
-  }
+  void deleteTeam(Team team) => _firestoreService.deleteTeam(team.id.toString());
 
   @override
   void onClose() {

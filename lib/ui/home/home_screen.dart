@@ -5,26 +5,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
 
-// --- Dummy Data Models ---
-// Example of updated Team model in your data models file (e.g., team_model.dart)
-// or within your home_screen_ui.dart if currently there.
-class Team {
-  final String id;
-  final String name;
-  final int playerCount;
-  final String? division; // Added for Team Details
-  final String? imageUrl; // Added for team image
-  final IconData? icon; // Existing icon if used for list item
+import '../../model/TeamModel.dart';
 
-  Team({
-    required this.id,
-    required this.name,
-    required this.playerCount,
-    this.division,
-    this.imageUrl,
-    this.icon,
-  });
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

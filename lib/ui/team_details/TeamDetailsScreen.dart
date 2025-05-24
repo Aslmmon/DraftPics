@@ -3,41 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../home/home_screen.dart';
+import 'package:flutter/material.dart';
 
-import '../home/home_screen.dart'; // Assuming Manrope is global
 
-// models/player_model.dart
-import 'package:flutter/material.dart'; // For IconData if used in dummy data
-
-class Player {
-  final String id;
-  final String firstName;
-  final String lastName;
-  final String
-  position; // Changed from position_number to String for 'Forward', 'Midfielder'
-  bool isCaptured; // Not used in this UI, but good to keep from model
-  final String? avatarUrl; // For player avatar image
-
-  Player({
-    required this.id,
-    required this.firstName,
-    required this.lastName,
-    required this.position,
-    this.isCaptured = false,
-    this.avatarUrl,
-  });
-
-  // Example for Firestore (assuming you'll retrieve actual data later)
-  // factory Player.fromFirestore(DocumentSnapshot doc) { ... }
-  // Map<String, dynamic> toFirestore() { ... }
-}
 
 class TeamDetailsScreen extends StatelessWidget {
-  // Remove the 'required this.team' from the constructor.
-  // We will retrieve the 'team' object from Get.arguments.
   const TeamDetailsScreen({super.key});
 
-  // Dummy Data for Players (unchanged)
   List<Player> get _dummyPlayers {
     return [
       Player(

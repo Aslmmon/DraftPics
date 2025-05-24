@@ -47,12 +47,11 @@ class TeamDetailsController extends GetxController {
     }
   }
 
-
   // Method to navigate to the Add Player screen
   void goToAddPlayer() {
     if (team.value.id.isNotEmpty) {
       // Pass the current team's ID to the Add Player screen
-      Get.toNamed(AppRoutes.playerScreen, arguments: team.value.id);
+      Get.toNamed(AppRoutes.playerFromScreen, arguments: team.value.id);
     } else {
       Get.snackbar(
         'Error',
@@ -64,12 +63,8 @@ class TeamDetailsController extends GetxController {
     }
   }
 
-  // Method to handle editing a player (placeholder for future implementation)
-  void editPlayer(Player player) {
-    print('Edit player: ${player.firstName} ${player.lastName}');
-    // You would navigate to an edit player screen here
-    // Get.toNamed(AppRoutes.editPlayer, arguments: player.id);
-  }
+  void editPlayer(Player player) =>
+      Get.toNamed(AppRoutes.playerFromScreen, arguments: player);
 
   @override
   void onClose() {

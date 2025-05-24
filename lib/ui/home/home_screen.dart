@@ -94,11 +94,7 @@ class HomeScreen extends GetView<HomeController> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: InkWell(
-                      onTap: () {
-                        controller.goToTeamDetails(
-                          team,
-                        ); // Call controller method for navigation
-                      },
+                      onTap: () => controller.goToTeamDetails(team),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -115,16 +111,7 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                         child: Row(
                           children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(12),
-                                image: null,
-                              ),
-                              child: null,
-                            ),
+                            Image.asset("images/team_image.png"),
                             const SizedBox(width: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

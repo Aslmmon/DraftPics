@@ -18,7 +18,7 @@ class Team {
     return Team(
       id: doc.id, // The document ID is the Team's ID
       name: data['name'] as String,
-      players: [], // Players are fetched separately, so initialize empty
+      players: [],
     );
   }
 
@@ -26,7 +26,6 @@ class Team {
   Map<String, dynamic> toFirestore() {
     return {
       'name': name,
-      // 'players' are not stored directly in the Team document in this architecture
     };
   }
 }

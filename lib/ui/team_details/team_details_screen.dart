@@ -2,7 +2,6 @@
 import 'package:draftpics/ui/team_details/team_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/model/PlayerModel.dart';
 import '../../data/model/TeamModel.dart';
@@ -58,12 +57,7 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16.0),
-                          child: Image.network(
-                            'https://via.placeholder.com/150x100?text=Team+Image',
-                            width: 150,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Image.asset("images/team_image.png"),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -119,6 +113,8 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
                                 (player) => PlayerListItem(
                                   player: player,
                                   textTheme: textTheme,
+                                  onEditPressed:
+                                      () => controller.editPlayer(player),
                                 ),
                               )
                               .toList(),
@@ -161,11 +157,13 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
 class PlayerListItem extends StatelessWidget {
   final Player player;
   final TextTheme textTheme;
+  final VoidCallback? onEditPressed; // <-- Add this callback
 
   const PlayerListItem({
     super.key,
     required this.player,
     required this.textTheme,
+    this.onEditPressed,
   });
 
   @override
@@ -174,18 +172,7 @@ class PlayerListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
       child: Row(
         children: [
-          // CircleAvatar(
-          //   radius: 28,
-          //   backgroundColor: Colors.grey[200],
-          //   backgroundImage:
-          //       player.avatarUrl != null
-          //           ? NetworkImage(player.avatarUrl!)
-          //           : null,
-          //   child:
-          //       player.avatarUrl == null
-          //           ? Icon(Icons.person, size: 30, color: Colors.blue[700])
-          //           : null,
-          // ),
+          Image.asset("images/player_image.png"),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -209,11 +196,7 @@ class PlayerListItem extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.grey),
-            onPressed: () {
-              // You can call a controller method here for editing too
-              // Get.find<TeamDetailsController>().editPlayer(player);
-              print('Edit player ${player.firstName} pressed!');
-            },
+            onPressed: onEditPressed,
           ),
         ],
       ),

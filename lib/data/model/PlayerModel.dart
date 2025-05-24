@@ -35,8 +35,8 @@ class Player {
   // Method to convert a Player object to a map for Firestore
   Map<String, dynamic> toFirestore() {
     return {
-      'firstName': firstName,
-      'lastName': lastName,
+      'first_name': firstName,
+      'last_name': lastName,
       'position': position,
       'isCaptured': isCaptured,
       'teamId': teamId, // Include teamId when saving

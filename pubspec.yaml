@@ -33,6 +33,7 @@ dependencies:
     git:
       url: https://github.com/Aslmmon/Reusable_Kit
       ref: main
+
   data_table_2: ^2.6.0
   google_fonts: ^6.2.1
 

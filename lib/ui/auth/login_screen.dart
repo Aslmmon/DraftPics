@@ -54,16 +54,12 @@ class LoginScreen extends GetView<AuthController> {
             ReusableTextField(
               controller: controller.emailController,
               keyboardType: TextInputType.emailAddress,
-              outlineBorderColor: Colors.black26,
-              focusBorderColor: Colors.blue,
               labelText: 'email',
             ),
             const SizedBox(height: 16), // Spacing between input fields
             ReusableTextField(
               controller: controller.passwordController,
               obscureText: true,
-              outlineBorderColor: Colors.black26,
-              focusBorderColor: Colors.blue,
               labelText: 'password',
             ),
             const SizedBox(height: 32), // Spacing before the button

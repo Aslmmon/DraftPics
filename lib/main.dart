@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         ),
         colorScheme: ThemeData().colorScheme.copyWith(primary: Colors.black26),
       ),
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.home,
       getPages: AppRoutes.pages,
     );
   }

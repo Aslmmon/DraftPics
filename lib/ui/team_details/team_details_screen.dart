@@ -37,7 +37,7 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
         // Use Obx to react to changes in controller.team and controller.players
         // 2. Check if the team object has been initialized in the controller
         // This handles cases where Get.arguments might be null or not a Team object.
-        if (controller.team.value.id.isEmpty) {
+        if (controller.team.value.id!.isEmpty) {
           // You could show a loading indicator or an error message here
           return const Center(child: CircularProgressIndicator());
         }

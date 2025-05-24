@@ -3,12 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'PlayerModel.dart';
 
 class Team {
-  final String id;
+  final String? id;
   final String name;
   final List<Player> players; // This list will be populated separately
 
   Team({
-    required this.id,
+    this.id,
     required this.name,
     this.players = const [], // Default to empty list
   });
@@ -24,8 +24,6 @@ class Team {
 
   // Method to convert a Team object to a map for Firestore
   Map<String, dynamic> toFirestore() {
-    return {
-      'name': name,
-    };
+    return {'name': name};
   }
 }

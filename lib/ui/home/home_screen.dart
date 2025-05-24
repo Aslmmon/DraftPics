@@ -1,8 +1,8 @@
-// lib/home_screen_ui.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
 
+import 'BottomSheetTeam.dart';
 import 'home_controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -27,9 +27,7 @@ class HomeScreen extends GetView<HomeController> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.black, size: 30),
-            onPressed: () {
-              controller.goToAddTeam(); // Call controller method
-            },
+            onPressed: () => showAddTeamBottomSheet(context, controller),
           ),
           const SizedBox(width: 16),
         ],

@@ -21,12 +21,10 @@ class TeamDetailsController extends GetxController {
     if (Get.arguments != null && Get.arguments is Team) {
       team = (Get.arguments as Team).obs; // Make the team observable
 
-      print("team is " + team.value.name);
-      print("team is " + team.value.id);
 
       // Subscribe to the stream of players for this specific team's ID
       _playersStreamSubscription = _firestoreService
-          .getPlayersForTeam(team.value.id)
+          .getPlayersForTeam(team.value.id!)
           .listen((fetchedPlayers) {
             players.value =
                 fetchedPlayers; // Update the observable players list
@@ -49,7 +47,7 @@ class TeamDetailsController extends GetxController {
 
   // Method to navigate to the Add Player screen
   void goToAddPlayer() {
-    if (team.value.id.isNotEmpty) {
+    if (team.value.id!.isNotEmpty) {
       // Pass the current team's ID to the Add Player screen
       Get.toNamed(AppRoutes.playerFromScreen, arguments: team.value.id);
     } else {

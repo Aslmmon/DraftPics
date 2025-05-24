@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
 
 import 'BottomSheetTeam.dart';
-import 'home_controller.dart';
+import 'controllers/home_controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
   // Renamed back to HomeScreenUI for consistency with previous responses
@@ -16,7 +16,6 @@ class HomeScreen extends GetView<HomeController> {
 
     // Controllers and keys needed for the bottom sheet
     // These are initialized here because their lifecycle is tied to the BottomSheet
-    final TextEditingController newTeamNameController = TextEditingController();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return Scaffold(
@@ -42,16 +41,9 @@ class HomeScreen extends GetView<HomeController> {
                 useRootNavigator: true,
                 // Prevents issues with nested navigators
                 builder: (context) {
-                  return AddTeamBottomSheet(
-                    controller: controller, // Pass the HomeController instance
-                    teamNameController: newTeamNameController,
-                    formKey: formKey,
-                  );
+                  return AddTeamBottomSheet(formKey: formKey);
                 },
-              ).whenComplete(() {
-                // Ensure the TextEditingController is disposed when the bottom sheet closes
-                newTeamNameController.dispose();
-              });
+              );
             },
           ),
           const SizedBox(width: 16),

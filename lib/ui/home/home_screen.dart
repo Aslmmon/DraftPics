@@ -1,3 +1,4 @@
+// lib/home_screen_ui.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
@@ -6,11 +7,17 @@ import 'BottomSheetTeam.dart';
 import 'home_controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
+  // Renamed back to HomeScreenUI for consistency with previous responses
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
+
+    // Controllers and keys needed for the bottom sheet
+    // These are initialized here because their lifecycle is tied to the BottomSheet
+    final TextEditingController newTeamNameController = TextEditingController();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +34,25 @@ class HomeScreen extends GetView<HomeController> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.black, size: 30),
-            onPressed: () => showAddTeamBottomSheet(context, controller),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                // Allows the sheet to take up more space if keyboard appears
+                useRootNavigator: true,
+                // Prevents issues with nested navigators
+                builder: (context) {
+                  return AddTeamBottomSheet(
+                    controller: controller, // Pass the HomeController instance
+                    teamNameController: newTeamNameController,
+                    formKey: formKey,
+                  );
+                },
+              ).whenComplete(() {
+                // Ensure the TextEditingController is disposed when the bottom sheet closes
+                newTeamNameController.dispose();
+              });
+            },
           ),
           const SizedBox(width: 16),
         ],
@@ -42,6 +67,7 @@ class HomeScreen extends GetView<HomeController> {
               vertical: 8.0,
             ),
             child: ReusableTextField(
+              // Assuming 'AppTextField' is the correct class name
               onChanged: (value) => controller.searchQuery.value = value,
               hintText: 'Search teams...',
               prefixIcon: const Icon(Icons.search, color: Colors.grey),
@@ -66,24 +92,27 @@ class HomeScreen extends GetView<HomeController> {
           ),
           const SizedBox(height: 16),
 
-          // 3. Use Obx to react to changes in controller.filteredTeams
           Expanded(
             child: Obx(() {
-              if (controller.filteredTeams.isEmpty &&
+              // --- Refined Empty/Loading State Messages ---
+              if (controller.allTeams.isEmpty &&
                   controller.searchQuery.isEmpty) {
-                // Initial loading state (or no teams at all)
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 return const Center(
-                  child: CircularProgressIndicator(),
-                ); // Or 'No teams added yet!'
+                  child: Text(
+                    'No teams added yet! Tap the + icon to add your first team.',
+                  ),
+                );
               }
               if (controller.filteredTeams.isEmpty &&
                   controller.searchQuery.isNotEmpty) {
-                // No results for the current search
+                // No results for the current search query
                 return const Center(
                   child: Text('No teams found matching your search.'),
                 );
               }
-              // Display the filtered teams
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 itemCount: controller.filteredTeams.length,
@@ -109,7 +138,8 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                         child: Row(
                           children: [
-                            Image.asset("images/team_image.png"),
+                            // --- Refined Image/Icon Display ---
+                            Image.asset('images/team_image.png'),
                             const SizedBox(width: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +152,9 @@ class HomeScreen extends GetView<HomeController> {
                                   ),
                                 ),
                                 Text(
+                                  // --- Using team.playerCount ---
                                   '${team.players.length} players',
+                                  // Assuming 'playerCount' is available in your Team model
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey,
                                   ),

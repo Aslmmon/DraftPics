@@ -1,87 +1,15 @@
-import 'package:draftpics/routes/app_routes.dart';
+// lib/home_screen_ui.dart
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
 
-import '../../model/TeamModel.dart';
+import 'home_controller.dart';
 
-
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenUIState();
-}
-
-class _HomeScreenUIState extends State<HomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
-
-  // Dummy Data for Teams
-  final List<Team> _allTeams = [
-    Team(
-      id: '1',
-      name: 'The Eagles',
-      playerCount: 12,
-      icon: Icons.sports_soccer,
-    ),
-    Team(
-      id: '2',
-      name: 'The Lions',
-      playerCount: 15,
-      icon: Icons.sports_football,
-    ),
-    Team(
-      id: '3',
-      name: 'The Tigers',
-      playerCount: 10,
-      icon: Icons.sports_basketball,
-    ),
-    Team(
-      id: '4',
-      name: 'The Bears',
-      playerCount: 11,
-      icon: Icons.sports_baseball,
-    ),
-    Team(
-      id: '5',
-      name: 'The Wolves',
-      playerCount: 8,
-      icon: Icons.catching_pokemon,
-    ),
-    Team(id: '6', name: 'The Hawks', playerCount: 14, icon: Icons.flight),
-  ];
-
-  List<Team> _filteredTeams = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _filteredTeams = _allTeams; // Initially show all teams
-    _searchController.addListener(_filterTeams);
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_filterTeams);
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _filterTeams() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredTeams =
-          _allTeams.where((team) {
-            return team.name.toLowerCase().contains(query);
-          }).toList();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Access the global text theme (with Manrope)
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -89,7 +17,7 @@ class _HomeScreenUIState extends State<HomeScreen> {
         title: Text(
           'Teams',
           style: textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold, // Adjust weight
+            fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
         ),
@@ -99,19 +27,16 @@ class _HomeScreenUIState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.black, size: 30),
-            // Plus icon
             onPressed: () {
-              print('Add new team button pressed!');
-              // Navigate to add team screen
+              controller.goToAddTeam(); // Call controller method
             },
           ),
-          const SizedBox(width: 16), // Padding for the icon
+          const SizedBox(width: 16),
         ],
       ),
       backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        // Align "My Teams" to start
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -119,7 +44,7 @@ class _HomeScreenUIState extends State<HomeScreen> {
               vertical: 8.0,
             ),
             child: ReusableTextField(
-              controller: _searchController,
+              onChanged: (value) => controller.searchQuery.value = value,
               hintText: 'Search teams...',
               prefixIcon: const Icon(Icons.search, color: Colors.grey),
               fillColor: Colors.grey[200],
@@ -129,94 +54,104 @@ class _HomeScreenUIState extends State<HomeScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16), // Spacing after search bar
+          const SizedBox(height: 16),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Text(
               'My Teams',
               style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold, // Make it bold
+                fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
           ),
-          const SizedBox(height: 16), // Spacing after "My Teams" heading
+          const SizedBox(height: 16),
 
+          // 3. Use Obx to react to changes in controller.filteredTeams
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              itemCount: _filteredTeams.length,
-              itemBuilder: (context, index) {
-                final team = _filteredTeams[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      Get.toNamed(AppRoutes.teamDetails, arguments: team);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white, // Card background
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(
-                              0,
-                              3,
-                            ), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          // Team Icon - Mimicking the rounded square look
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              // Light grey background for icon
-                              borderRadius: BorderRadius.circular(
-                                12,
-                              ), // Rounded corners
+            child: Obx(() {
+              if (controller.filteredTeams.isEmpty &&
+                  controller.searchQuery.isEmpty) {
+                // Initial loading state (or no teams at all)
+                return const Center(
+                  child: CircularProgressIndicator(),
+                ); // Or 'No teams added yet!'
+              }
+              if (controller.filteredTeams.isEmpty &&
+                  controller.searchQuery.isNotEmpty) {
+                // No results for the current search
+                return const Center(
+                  child: Text('No teams found matching your search.'),
+                );
+              }
+              // Display the filtered teams
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                itemCount: controller.filteredTeams.length,
+                itemBuilder: (context, index) {
+                  final team = controller.filteredTeams[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: InkWell(
+                      onTap: () {
+                        controller.goToTeamDetails(
+                          team,
+                        ); // Call controller method for navigation
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
                             ),
-                            child: Icon(
-                              team.icon, // Your dummy icon
-                              color: Colors.blue[700], // Icon color
-                              size: 28,
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                                image: null,
+                              ),
+                              child: null,
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                team.name,
-                                style: textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                            const SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  team.name,
+                                  style: textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                '${team.playerCount} players',
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey,
+                                Text(
+                                  '${team.players.length} players',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),

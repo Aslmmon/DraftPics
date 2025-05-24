@@ -24,8 +24,8 @@ class Player {
     return Player(
       id: doc.id,
       // The document ID is the Player's ID
-      firstName: data['firstName'] as String,
-      lastName: data['lastName'] as String,
+      firstName: data['first_name'] as String,
+      lastName: data['last_name'] as String,
       position: data['position'] as String,
       isCaptured: data['isCaptured'] as bool? ?? false,
       teamId: data['teamId'] as String, // Retrieve teamId

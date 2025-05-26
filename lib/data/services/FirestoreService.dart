@@ -40,6 +40,10 @@ class FirestoreService {
   Future<void> deletePlayer(String playerId) async {
     await _db.collection(playersCollection).doc(playerId).delete();
   }
+  Stream<List<Player>> getAllPlayers() {
+    return _db.collection(playersCollection).snapshots().map((snapshot) =>
+        snapshot.docs.map((doc) => Player.fromFirestore(doc)).toList());
+  }
 
   Stream<List<Player>> getPlayersForTeam(String teamId) => _db
       .collection(playersCollection)

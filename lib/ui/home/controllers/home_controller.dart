@@ -2,6 +2,7 @@ import 'dart:async'; // Required for StreamSubscription
 
 import 'package:get/get.dart';
 
+import '../../../data/model/PlayerModel.dart';
 import '../../../data/model/TeamModel.dart';
 import '../../../data/services/FirestoreService.dart';
 import '../../../routes/app_routes.dart';
@@ -10,13 +11,18 @@ class HomeController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
 
   var allTeams = <Team>[].obs;
-  var filteredTeams = <Team>[].obs;
+  var allPlayers = <Player>[].obs; // NEW: All players
+  var searchResults = <Team>[].obs; // <<< Changed to RxList<Team>
+
   var searchQuery = ''.obs;
 
   var isLoading =
       false.obs; // Observable for loading state of addTeam operation
 
   StreamSubscription<List<Team>>? _teamsStreamSubscription;
+  StreamSubscription<List<Player>>?
+  _playersStreamSubscription; // NEW: Player stream
+
   late Worker _searchWorker;
 
   @override
@@ -24,66 +30,65 @@ class HomeController extends GetxController {
     super.onInit();
     _teamsStreamSubscription = _firestoreService.getTeams().listen((teams) {
       allTeams.value = teams;
-      _filterTeams();
+      _filterResults(); // Filter whenever teams or players update
+    });
+
+    _playersStreamSubscription = _firestoreService.getAllPlayers().listen((
+      players,
+    ) {
+      allPlayers.value = players;
+      _filterResults(); // Filter whenever teams or players update
     });
 
     _searchWorker = debounce(
       searchQuery,
-      (_) => _filterTeams(),
-      time: const Duration(milliseconds: 300), // Wait 300ms after last change
+      (_) => _filterResults(), // Call _filterResults
+      time: const Duration(milliseconds: 300),
     );
   }
 
-  // Method to add a new team to Firestore (Pure Logic)
-  Future<void> addTeam(String teamName) async {
-    isLoading.value = true; // Set loading to true
+  // NEW: Filter method for combined results
+  void _filterResults() {
+    final query = searchQuery.value.toLowerCase().trim();
+    final Set<Team> uniqueFilteredTeams = {}; // Use a Set to store unique teams
 
-    print(teamName.toString());
-    try {
-      if (teamName.trim().isEmpty) {
-        Get.snackbar(
-          'Validation Error',
-          'Team name cannot be empty.',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return; // Exit if validation fails
-      }
-
-      final newTeam = Team(name: teamName);
-
-      await _firestoreService.addTeam(newTeam);
-
-      Get.back(); // Close the bottom sheet (this is called from the UI)
-      Get.snackbar(
-        'Success',
-        'Team "$teamName" added successfully!',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to add team: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.colorScheme.error,
-        colorText: Get.theme.colorScheme.onError,
-      );
-      print('Error adding team: $e');
-    } finally {
-      isLoading.value = false; // Set loading to false regardless of outcome
-    }
-  }
-
-  void _filterTeams() {
-    if (searchQuery.value.isEmpty) {
-      filteredTeams.value = allTeams; // If empty, show all teams
+    if (query.isEmpty) {
+      // If query is empty, show all teams
+      uniqueFilteredTeams.addAll(allTeams);
     } else {
-      filteredTeams.value =
-          allTeams.where((team) {
-            return team.name.toLowerCase().contains(
-              searchQuery.value.toLowerCase(),
-            );
-          }).toList();
+      // 1. Filter teams by name directly
+      uniqueFilteredTeams.addAll(
+        allTeams.where((team) => team.name.toLowerCase().contains(query)),
+      );
+
+      // 2. Find players matching the query
+      final matchingPlayers = allPlayers.where(
+        (player) =>
+            player.firstName.toLowerCase().contains(query) ||
+            player.lastName.toLowerCase().contains(query),
+      );
+
+      // 3. Collect team IDs from matching players
+      final Set<String> teamIdsWithMatchingPlayers =
+          matchingPlayers
+              .map((player) => player.teamId) // Assuming teamId is not null
+              .toSet();
+
+      // 4. Add teams corresponding to matching players
+      uniqueFilteredTeams.addAll(
+        allTeams.where(
+          (team) =>
+              team.id != null && teamIdsWithMatchingPlayers.contains(team.id),
+        ),
+      );
     }
+
+    // Convert the Set back to a List and assign to searchResults
+    // You might want to sort these teams, e.g., alphabetically
+    searchResults.value =
+        uniqueFilteredTeams.toList()..sort(
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        ); // Update the observable list
   }
 
   void goToTeamDetails(Team team) =>
@@ -95,6 +100,7 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     _teamsStreamSubscription?.cancel();
+    _playersStreamSubscription?.cancel(); // NEW: Cancel player stream
     _searchWorker.dispose();
     super.onClose();
   }

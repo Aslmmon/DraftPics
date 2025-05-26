@@ -13,6 +13,8 @@ class HomeController extends GetxController {
   var allTeams = <Team>[].obs;
   var allPlayers = <Player>[].obs; // NEW: All players
   var searchResults = <Team>[].obs; // <<< Changed to RxList<Team>
+  var playerCounts =
+      <String, int>{}.obs; // NEW: Map to store player counts per team
 
   var searchQuery = ''.obs;
 
@@ -37,6 +39,7 @@ class HomeController extends GetxController {
       players,
     ) {
       allPlayers.value = players;
+      _updatePlayerCounts(); // NEW: Update counts when players change
       _filterResults(); // Filter whenever teams or players update
     });
 
@@ -45,6 +48,16 @@ class HomeController extends GetxController {
       (_) => _filterResults(), // Call _filterResults
       time: const Duration(milliseconds: 300),
     );
+  }
+
+  void _updatePlayerCounts() {
+    final Map<String, int> counts = {};
+    for (var player in allPlayers) {
+      if (player.teamId != null) {
+        counts[player.teamId!] = (counts[player.teamId!] ?? 0) + 1;
+      }
+    }
+    playerCounts.value = counts; // Update the observable map
   }
 
   // NEW: Filter method for combined results

@@ -54,7 +54,7 @@ class HomeScreen extends GetView<HomeController> {
             child: ReusableTextField(
               // Assuming 'AppTextField' is the correct class name
               onChanged: (value) => controller.searchQuery.value = value,
-              hintText: 'Search teams...',
+              hintText: 'Search teams or Player .. ',
               prefixIcon: const Icon(Icons.search, color: Colors.grey),
               fillColor: Colors.grey[200],
               border: OutlineInputBorder(
@@ -109,11 +109,13 @@ class HomeScreen extends GetView<HomeController> {
                 itemCount: controller.searchResults.length,
                 itemBuilder: (context, index) {
                   final Team team = controller.searchResults[index];
+                  final int count = controller.playerCounts[team.id] ?? 0; // Default to 0 if not found
 
                   return TeamListItem(
                     controller: controller,
                     team: team,
                     textTheme: textTheme,
+                    count: count,
                   );
                   // Should not happen
                 },

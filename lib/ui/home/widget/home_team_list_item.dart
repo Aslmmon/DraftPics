@@ -13,11 +13,13 @@ class TeamListItem extends StatelessWidget {
     required this.controller,
     required this.team,
     required this.textTheme,
+    required this.count,
   });
 
   final HomeController controller;
   final Team team;
   final TextTheme textTheme;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,7 @@ class TeamListItem extends StatelessWidget {
                     ),
                     Text(
                       // --- Using team.playerCount ---
-                      '${team.players.length} players',
+                      '$count players',
                       // Assuming 'playerCount' is available in your Team model
                       style: textTheme.bodyMedium?.copyWith(color: Colors.grey),
                     ),

@@ -22,6 +22,9 @@ class PlayerFormSaveButton extends GetView<PlayerFormController> {
         customChild: controller.isLoading.value
             ? const CircularProgressIndicator(color: Colors.white)
             : Text(
+          style: TextStyle(
+            color: Colors.white
+          ),
           controller.isEditing.value
               ? AppConstants.saveChangesButton
               : AppConstants.addPlayerButtonForm

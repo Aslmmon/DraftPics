@@ -114,8 +114,7 @@ class HomeController extends GetxController {
   void goToTeamDetails(Team team) =>
       Get.toNamed(AppRoutes.teamDetails, arguments: team);
 
-  void deleteTeam(Team team) =>
-      _firestoreService.deleteTeam(team.id.toString());
+  Future<void> deleteTeam(Team team) async =>  await _firestoreService.deleteTeam(team.id.toString());
 
   @override
   void onClose() {

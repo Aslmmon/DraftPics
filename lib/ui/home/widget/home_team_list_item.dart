@@ -81,9 +81,10 @@ class TeamListItem extends StatelessWidget {
                         'Are you sure you want to delete this team ? \n This action cannot be undone.',
                     yesText: 'Delete',
                     noText: 'Cancel',
-                    onYesPressed: () {
-                      controller.deleteTeam(team);
+                    onYesPressed: () async {
+                      await controller.deleteTeam(team);
                       Get.back();
+
                     },
                     onNoPressed: () {
                       Get.back();

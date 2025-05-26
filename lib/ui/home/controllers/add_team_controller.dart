@@ -48,12 +48,14 @@ class AddTeamController extends GetxController {
       );
       print('Error adding team: $e');
     } finally {
+      teamNameController.text = '';
       isLoading.value = false; // Set loading to false regardless of outcome
     }
   }
 
   @override
   void onClose() {
+    teamNameController.text = '';
     teamNameController.dispose();
     super.onClose();
   }

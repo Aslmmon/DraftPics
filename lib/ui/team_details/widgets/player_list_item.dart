@@ -33,8 +33,8 @@ class PlayerListItem extends StatelessWidget {
             // Smaller radius for player image
             child: Image.asset(
               player.gender == Gender.male
-                  ? "images/player_image.png"
-                  : "images/player_female_image.png",
+                  ? "assets/images/player_image.png"
+                  : "assets/images/player_female_image.png",
               width: 50, // Example size
               height: 50, // Example size
               fit: BoxFit.cover,

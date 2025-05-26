@@ -22,7 +22,7 @@ class TeamHeaderSection extends StatelessWidget {
             color: Colors.grey,
 
             width: double.infinity,
-            child: Image.asset("images/logo.png", fit: BoxFit.cover),
+            child: Image.asset("assets/images/logo.png", fit: BoxFit.cover),
           ),
           const SizedBox(height: 16),
           Text(

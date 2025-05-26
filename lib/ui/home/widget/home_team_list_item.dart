@@ -49,7 +49,7 @@ class TeamListItem extends StatelessWidget {
                 backgroundColor: Colors.grey[200],
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Image.asset("images/logo.png"),
+                  child: Image.asset("assets/images/logo.png"),
                 ),
               ),
               const SizedBox(width: 16),

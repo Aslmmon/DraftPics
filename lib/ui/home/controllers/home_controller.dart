@@ -99,9 +99,16 @@ class HomeController extends GetxController {
     // Convert the Set back to a List and assign to searchResults
     // You might want to sort these teams, e.g., alphabetically
     searchResults.value =
-        uniqueFilteredTeams.toList()..sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        ); // Update the observable list
+        uniqueFilteredTeams.toList()..sort((a, b) {
+          // Handle cases where creationTime might be null (e.g., old data without it)
+          // Null values will be considered "older" (placed at the end for descending sort)
+          if (a.creationTime == null && b.creationTime == null) return 0;
+          if (a.creationTime == null) return 1; // b is newer, a goes after b
+          if (b.creationTime == null) return -1; // a is newer, b goes after a
+
+          // Descending order: b.compareTo(a) means newest first
+          return b.creationTime!.compareTo(a.creationTime!);
+        });
   }
 
   void goToTeamDetails(Team team) =>

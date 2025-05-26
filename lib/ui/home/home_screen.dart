@@ -109,7 +109,9 @@ class HomeScreen extends GetView<HomeController> {
                 itemCount: controller.searchResults.length,
                 itemBuilder: (context, index) {
                   final Team team = controller.searchResults[index];
-                  final int count = controller.playerCounts[team.id] ?? 0; // Default to 0 if not found
+                  final int count =
+                      controller.playerCounts[team.id] ??
+                      0; // Default to 0 if not found
 
                   return TeamListItem(
                     controller: controller,

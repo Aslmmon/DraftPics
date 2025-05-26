@@ -13,7 +13,6 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -121,10 +120,17 @@ class HomeScreen extends GetView<HomeController> {
                             ),
                           ],
                         ),
+
                         child: Row(
                           children: [
-                            // --- Refined Image/Icon Display ---
-                            Image.asset('images/team_image.png'),
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.grey[200],
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.asset("images/logo.png"),
+                              ),
+                            ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(

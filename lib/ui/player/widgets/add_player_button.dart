@@ -1,4 +1,3 @@
-// lib/ui/team_details/widgets/add_player_button.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reutilizacao/ui/components/AppButton.dart';
@@ -14,12 +13,14 @@ class AddPlayerButton extends GetView<TeamDetailsController> {
       bottom: 24,
       left: 24,
       right: 24,
-      child: ReusableButton( // Use ReusableButton
+      child: ReusableButton(
+        // Use ReusableButton
         onPressed: () {
           controller.goToAddPlayer(); // Call controller method
         },
         // icon: const Icon(Icons.add, color: Colors.white), // Ensure icon color is white
-        text: AppConstants.addPlayerButton, // Use constant
+        text: AppConstants.addPlayerButton,
+        // Use constant
         backgroundColor: Colors.blue,
         // foregroundColor: Colors.white,
         // elevation: 4,

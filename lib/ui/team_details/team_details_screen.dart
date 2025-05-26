@@ -1,14 +1,14 @@
 // lib/ui/team_details/team_details_screen.dart (The main screen file)
 import 'package:draftpics/ui/team_details/team_details_controller.dart';
+import 'package:draftpics/ui/team_details/widgets/player_list_section.dart';
+import 'package:draftpics/ui/team_details/widgets/players_heading_section.dart';
+import 'package:draftpics/ui/team_details/widgets/team_header_section.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 // Import new components
 import '../../data/model/TeamModel.dart';
 import '../player/widgets/add_player_button.dart';
-import '../player/widgets/player_list_section.dart';
-import '../player/widgets/players_heading_section.dart';
-import '../player/widgets/team_header_section.dart';
 
 import '../../utils/app_constants.dart'; // Import constants
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../utils/app_constants.dart'; // Adjust path
 import '../../team_details/team_details_controller.dart';
-import 'player_list_item.dart'; // Adjust path
+import '../../team_details/widgets/player_list_item.dart'; // Adjust path
 
 class PlayerListSection extends GetView<TeamDetailsController> {
   final TextTheme textTheme;

@@ -124,7 +124,7 @@ class HomeScreen extends GetView<HomeController> {
                         child: Row(
                           children: [
                             // --- Refined Image/Icon Display ---
-                            Hero(tag: 1, child: Image.asset('images/team_image.png')),
+                            Image.asset('images/team_image.png'),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(

@@ -1,9 +1,12 @@
 import 'package:draftpics/ui/team_details/team_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
 
 import '../../data/model/PlayerModel.dart';
 import '../../data/model/TeamModel.dart';
+import '../widgets/full_screen_qr_dialog.dart';
 
 class TeamDetailsScreen extends GetView<TeamDetailsController> {
   const TeamDetailsScreen({super.key});
@@ -52,10 +55,7 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16.0),
-                          child: Hero(
-                            tag: 1,
-                            child: Image.asset("images/team_image.png"),
-                          ),
+                          child: Image.asset("images/team_image.png"),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -63,13 +63,6 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
                           style: textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          'Division N/A',
-                          style: textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -170,7 +163,11 @@ class PlayerListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
       child: Row(
         children: [
-          Image.asset("images/player_image.png"),
+          Image.asset(
+            player.gender == Gender.male
+                ? "images/player_image.png"
+                : "images/player_female_image.png",
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -184,12 +181,38 @@ class PlayerListItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  player.position,
+                  "position : ${player.position}",
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                Text(
+                  "Gender : ${player.gender}",
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                Text(
+                  "isCaptured : ${player.isCaptured ? "✅" : "❌"}",
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),
               ],
+            ),
+          ),
+          GestureDetector(
+            onTap:
+                () => Get.dialog(
+                  FullScreenQrDialog(
+                    qrData:
+                        player.toString(), // Pass the data you want to encode
+                  ),
+                ),
+            child: QrImageView(
+              data: player.toString(),
+              version: QrVersions.auto,
+              size: 75.0,
             ),
           ),
           IconButton(

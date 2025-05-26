@@ -1,4 +1,3 @@
-// lib/team_details_screen_ui.dart
 import 'package:draftpics/ui/team_details/team_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,13 +33,9 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
         centerTitle: true,
       ),
       body: Obx(() {
-        // Use Obx to react to changes in controller.team and controller.players
-        // 2. Check if the team object has been initialized in the controller
-        // This handles cases where Get.arguments might be null or not a Team object.
-        if (controller.team.value.id!.isEmpty) {
-          // You could show a loading indicator or an error message here
-          return const Center(child: CircularProgressIndicator());
-        }
+        // if (controller.team.value.id!.isEmpty) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
 
         final Team team = controller.team.value;
 
@@ -57,7 +52,10 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16.0),
-                          child: Image.asset("images/team_image.png"),
+                          child: Hero(
+                            tag: 1,
+                            child: Image.asset("images/team_image.png"),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Text(

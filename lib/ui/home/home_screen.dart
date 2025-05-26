@@ -1,7 +1,6 @@
 // lib/home_screen_ui.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:reutilizacao/ui/components/AppButton.dart';
 import 'package:reutilizacao/ui/components/AppTextField.dart';
 import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
 
@@ -125,7 +124,7 @@ class HomeScreen extends GetView<HomeController> {
                         child: Row(
                           children: [
                             // --- Refined Image/Icon Display ---
-                            Image.asset('images/team_image.png'),
+                            Hero(tag: 1, child: Image.asset('images/team_image.png')),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(

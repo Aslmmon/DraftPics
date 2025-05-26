@@ -1,119 +1,101 @@
-// lib/controllers/player_form_controller.dart
+// lib/ui/player/player_form_controller.dart (Adjust path if different)
 import 'package:flutter/material.dart'; // For TextEditingController
 import 'package:get/get.dart';
-
-import '../../data/model/PlayerModel.dart';
-import '../../data/services/FirestoreService.dart';
+import '../../data/model/PlayerModel.dart'; // Make sure PlayerModel is imported
+import '../../data/services/FirestoreService.dart'; // Make sure FirestoreService is imported
 
 class PlayerFormController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
 
+  // Text editing controllers
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController positionController = TextEditingController();
 
-  var isEditing = false.obs;
-  var isLoading = false.obs;
-  Player? _originalPlayer;
-  late String _currentTeamId;
+  // Observables for new dropdowns
+  final Rx<Gender> selectedGender = Gender.male.obs; // Observable for gender
+  final RxBool isCaptured = false.obs; // Observable for isCaptured
+
+  // State management
+  final RxBool isLoading = false.obs;
+  final RxBool isEditing = false.obs; // To determine if we're adding or editing
+
+  // Store current player being edited
+  Player? playerToEdit;
+  String? teamId; // To know which team this player belongs to
 
   @override
   void onInit() {
     super.onInit();
-    final arguments = Get.arguments;
-
-    if (arguments != null) {
-      if (arguments is Player) {
-        // We are in edit mode
+    // Get arguments (player for editing, teamId for adding)
+    if (Get.arguments != null) {
+      if (Get.arguments is Player) {
+        playerToEdit = Get.arguments as Player;
         isEditing.value = true;
-        _originalPlayer = arguments;
-        _currentTeamId =
-            _originalPlayer!.teamId; // Get teamId from player being edited
-
-        // Pre-fill the form fields with existing player data
-        firstNameController.text = _originalPlayer!.firstName;
-        lastNameController.text = _originalPlayer!.lastName;
-        positionController.text = _originalPlayer!.position;
-      } else if (arguments is String) {
-        // We are in add mode, arguments is the teamId
+        _populateFields(playerToEdit!);
+      } else if (Get.arguments is String) {
+        teamId =
+            Get.arguments as String; // Passed teamId when adding new player
         isEditing.value = false;
-        _currentTeamId = arguments;
-      } else {
-        // Invalid arguments
-        _handleInvalidArguments();
       }
-    } else {
-      // No arguments provided, likely an error or direct navigation without context
-      _handleInvalidArguments();
     }
   }
 
-  void _handleInvalidArguments() {
-    Get.snackbar(
-      'Error',
-      'Missing team information or player data for form.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Get.theme.colorScheme.error,
-      colorText: Get.theme.colorScheme.onError,
-    );
-    // Navigate back if context is truly missing
-    Future.delayed(const Duration(milliseconds: 500), () => Get.back());
+  void _populateFields(Player player) {
+    firstNameController.text = player.firstName;
+    lastNameController.text = player.lastName;
+    positionController.text = player.position;
+    selectedGender.value = player.gender; // Set initial gender
+    isCaptured.value = player.isCaptured; // Set initial isCaptured
+    teamId = player.teamId; // Ensure teamId is set for editing context
   }
 
-  // Method to save (add or update) the player
   Future<void> savePlayer() async {
     // Basic validation
     if (firstNameController.text.trim().isEmpty ||
         lastNameController.text.trim().isEmpty ||
         positionController.text.trim().isEmpty) {
       Get.snackbar(
-        'Validation',
-        'Please fill all fields.',
+        'Error',
+        'All fields are required!',
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
-    if (_currentTeamId.isEmpty) {
+
+    if (teamId == null) {
       Get.snackbar(
         'Error',
-        'Team context missing. Cannot save player.',
+        'Team ID is missing. Cannot save player.',
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
-    isLoading.value = true; // Show loading indicator
-
+    isLoading.value = true;
     try {
-      if (isEditing.value && _originalPlayer != null) {
-        // Update existing player
-        final updatedPlayer = Player(
-          id: _originalPlayer!.id,
-          // Keep the original ID
-          firstName: firstNameController.text.trim(),
-          lastName: lastNameController.text.trim(),
-          position: positionController.text.trim(),
-          isCaptured: _originalPlayer!.isCaptured,
-          // Preserve original avatar
-          teamId: _currentTeamId, // Preserve original teamId
-        );
-        await _firestoreService.updatePlayer(updatedPlayer);
+      final player = Player(
+        id: playerToEdit?.id,
+        // Use existing ID if editing
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        position: positionController.text.trim(),
+        gender: selectedGender.value,
+        // Get selected gender
+        isCaptured: isCaptured.value,
+        // Get selected isCaptured
+        teamId: teamId!, // Use the teamId
+      );
+
+      if (isEditing.value) {
+        await _firestoreService.updatePlayer(player);
         Get.snackbar(
           'Success',
           'Player updated successfully!',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
-        // Add new player
-        final newPlayer = Player(
-          id: '',
-          firstName: firstNameController.text.trim(),
-          lastName: lastNameController.text.trim(),
-          position: positionController.text.trim(),
-          teamId: _currentTeamId,
-          isCaptured: false,
-        );
-        await _firestoreService.addPlayer(newPlayer);
+        await _firestoreService.addPlayer(player);
         Get.snackbar(
           'Success',
           'Player added successfully!',
@@ -131,7 +113,7 @@ class PlayerFormController extends GetxController {
       );
       print('Error saving player: $e');
     } finally {
-      isLoading.value = false; // Hide loading indicator
+      isLoading.value = false;
     }
   }
 

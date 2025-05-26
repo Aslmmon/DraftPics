@@ -420,8 +420,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "93b97438ef0d26b028b2820524dfcc610b3c7069"
+      ref: HEAD
+      resolved-ref: "7ba7293da47c2854e60352a63bda7eaf26f9c0b9"
       url: "https://github.com/Aslmmon/Reusable_Kit"
     source: git
     version: "1.0.0+1"

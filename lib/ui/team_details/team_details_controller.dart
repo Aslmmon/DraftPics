@@ -1,73 +1,99 @@
-import 'dart:async'; // For StreamSubscription
+// lib/ui/team_details/team_details_controller.dart
+import 'dart:async'; // Required for StreamSubscription
 
 import 'package:get/get.dart';
-
+import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
 import '../../data/model/PlayerModel.dart';
 import '../../data/model/TeamModel.dart';
 import '../../data/services/FirestoreService.dart';
 import '../../routes/app_routes.dart';
+import '../../utils/app_constants.dart'; // Import constants
 
 class TeamDetailsController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
 
-  late Rx<Team> team;
+  final Rx<Team> team =
+      Team(name: 'Loading...', id: '').obs; // Initialize with a dummy team
+  final RxList<Player> players = <Player>[].obs; // Reactive list of players
 
-  var players = <Player>[].obs;
   StreamSubscription<List<Player>>? _playersStreamSubscription;
+  StreamSubscription<Team>? _teamStreamSubscription;
 
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null && Get.arguments is Team) {
-      team = (Get.arguments as Team).obs; // Make the team observable
+    final Team? argsTeam = Get.arguments as Team?;
+    if (argsTeam != null) {
+      team.value = argsTeam; // Set the initial team from arguments
 
+      // Listen to the team document for real-time updates (e.g., if name changes)
+      // _teamStreamSubscription = _firestoreService
+      //     .getTeamById(argsTeam.id!)
+      //     .listen((updatedTeam) {
+      //       if (updatedTeam != null) {
+      //         team.value = updatedTeam;
+      //       }
+      //     });
 
-      // Subscribe to the stream of players for this specific team's ID
+      // Listen for players for this specific team
       _playersStreamSubscription = _firestoreService
-          .getPlayersForTeam(team.value.id!)
-          .listen((fetchedPlayers) {
-            players.value =
-                fetchedPlayers; // Update the observable players list
+          .getPlayersForTeam(argsTeam.id!)
+          .listen((playerList) {
+            players.value = playerList; // Update the observable list
           });
     } else {
-      // Handle the case where the team object was not passed
+      // Handle case where no team is passed (e.g., show an error or go back)
+      Get.back();
       Get.snackbar(
         'Error',
-        'Team details not found. Please select a team from the home screen.',
+        'No team data received!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.colorScheme.error,
-        colorText: Get.theme.colorScheme.onError,
       );
-      // Optionally navigate back to prevent an empty screen
-      Future.delayed(const Duration(milliseconds: 500), () {
-        Get.back();
-      });
     }
   }
 
-  // Method to navigate to the Add Player screen
   void goToAddPlayer() {
-    if (team.value.id!.isNotEmpty) {
-      // Pass the current team's ID to the Add Player screen
-      Get.toNamed(AppRoutes.playerFromScreen, arguments: team.value.id);
-    } else {
-      Get.snackbar(
-        'Error',
-        'Cannot add player: Team ID is missing.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.colorScheme.error,
-        colorText: Get.theme.colorScheme.onError,
-      );
-    }
+    Get.toNamed(AppRoutes.playerFromScreen, arguments: team.value.id);
   }
 
-  void editPlayer(Player player) =>
-      Get.toNamed(AppRoutes.playerFromScreen, arguments: player);
+  void editPlayer(Player player) {
+    Get.toNamed(AppRoutes.playerFromScreen, arguments: player);
+  }
+
+  // --- NEW: Delete Player Method ---
+  void deletePlayer(Player player) {
+    ReusableAlertDialog.show(
+      title: AppConstants.deletePlayerTitle,
+      content:
+          '${AppConstants.deletePlayerContent}"${player.firstName} ${player.lastName}"? This action cannot be undone.',
+      yesText: AppConstants.deleteButton,
+      noText: AppConstants.cancelButton,
+      onYesPressed: () async {
+        try {
+          await _firestoreService.deletePlayer(player.id!);
+          Get.snackbar(
+            'Success',
+            'Player "${player.firstName} ${player.lastName}" deleted successfully!',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } catch (e) {
+          Get.snackbar(
+            'Error',
+            'Failed to delete player: ${e.toString()}',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Get.theme.colorScheme.error,
+            colorText: Get.theme.colorScheme.onError,
+          );
+          print('Error deleting player: $e');
+        }
+      },
+    );
+  }
 
   @override
   void onClose() {
-    // Cancel the stream subscription to prevent memory leaks
     _playersStreamSubscription?.cancel();
+    _teamStreamSubscription?.cancel();
     super.onClose();
   }
 }

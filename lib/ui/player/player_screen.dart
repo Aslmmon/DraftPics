@@ -11,12 +11,6 @@ class PlayerFormScreen extends GetView<PlayerFormController> {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    // Custom InputDecoration for AppTextField (to disable hover)
-    // We'll define a base InputDecoration and extend it in AppTextField if needed.
-    // The key to disabling hover is ensuring no MaterialStateProperty is reacting to MaterialState.hovered
-    // or by overriding hoverColor. Your current customInputDecoration already has hoverColor: Colors.white.
-    // If ReusableTextField (AppTextField) has an internal InkWell, you might need to adjust it.
-    // Assuming AppTextField can take an InputDecoration directly, this will work.
     final InputDecoration customInputDecoration = InputDecoration(
       filled: true,
       fillColor: Colors.white,

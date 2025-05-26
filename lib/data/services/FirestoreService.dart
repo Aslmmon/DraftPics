@@ -37,6 +37,10 @@ class FirestoreService {
     return _db.collection(teamsCollections).doc(teamId).delete();
   }
 
+  Future<void> deletePlayer(String playerId) async {
+    await _db.collection(playersCollection).doc(playerId).delete();
+  }
+
   Stream<List<Player>> getPlayersForTeam(String teamId) => _db
       .collection(playersCollection)
       .where('teamId', isEqualTo: teamId) // Filter by teamId
@@ -58,7 +62,4 @@ class FirestoreService {
       .collection(playersCollection)
       .doc(player.id)
       .update(player.toFirestore());
-
-  Future<void> deletePlayer(String playerId) =>
-      _db.collection(playersCollection).doc(playerId).delete();
 }

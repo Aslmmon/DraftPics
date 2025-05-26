@@ -32,13 +32,7 @@ class PlayerListSection extends GetView<TeamDetailsController> {
                       player: player,
                       textTheme: textTheme,
                       onEditPressed: () => controller.editPlayer(player),
-                      onDeletePressed:
-                          () {
-                        
-                          }
-                          //     controller.deletePlayer(
-                          //   player,
-                          // ), // Pass delete callback
+                      onDeletePressed: () => controller.deletePlayer(player)
                     ),
                   )
                   .toList(),

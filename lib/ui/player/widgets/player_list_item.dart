@@ -59,7 +59,7 @@ class PlayerListItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "${AppConstants.playerGenderMale.split(' ')[0]} : ${player.gender == Gender.male ? AppConstants.playerGenderMale : AppConstants.playerGenderFemale}",
+                  "${AppConstants.playerGender} : ${player.gender == Gender.male ? AppConstants.playerGenderMale : AppConstants.playerGenderFemale}",
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),

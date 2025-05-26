@@ -70,6 +70,8 @@ class AppConstants {
 
   // Player Details Display
   static const String playerGenderMale = 'Male';
+  static const String playerGender = 'Gender';
+
   static const String playerGenderFemale = 'Female';
   static const String playerCapturedYes = 'Yes (Captured)';
   static const String playerCapturedNo = 'No (Not Captured)';

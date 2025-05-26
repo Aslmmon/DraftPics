@@ -54,4 +54,16 @@ class Player {
       'teamId': teamId,
     };
   }
+
+
+
+  @override
+  String toString() {
+    return 'Player: $firstName $lastName ,\n'
+        'Position: $position,\n'
+        'Gender: ${gender.toString().split('.').last}\n'
+        'Captured: ${isCaptured ? "Yes," : "No,"}\n'
+        'Team ID: ${teamId ?? "N/A"}\n'
+        'Player ID: ${id ?? "N/A"}';
+  }
 }

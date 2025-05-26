@@ -84,7 +84,6 @@ class TeamListItem extends StatelessWidget {
                     onYesPressed: () async {
                       await controller.deleteTeam(team);
                       Get.back();
-
                     },
                     onNoPressed: () {
                       Get.back();

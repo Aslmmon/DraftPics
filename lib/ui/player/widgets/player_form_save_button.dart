@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:reutilizacao/ui/components/AppButton.dart';
 import '../../../../utils/app_constants.dart'; // Constants
 import '../player_form_controller.dart';
-import 'add_player_button.dart'; // Controller
 
 class PlayerFormSaveButton extends GetView<PlayerFormController> {
   const PlayerFormSaveButton({super.key});
@@ -15,21 +14,20 @@ class PlayerFormSaveButton extends GetView<PlayerFormController> {
       bottom: 24,
       left: 24,
       right: 24,
-      child: ReusableButton(
-        // Use ReusableButton
-        onPressed: () => controller.savePlayer(),
-        // icon: const Icon(Icons.add, color: Colors.white), // Ensure icon color is white
-        customChild: controller.isLoading.value
-            ? const CircularProgressIndicator(color: Colors.white)
-            : Text(
-          style: TextStyle(
-            color: Colors.white
-          ),
-          controller.isEditing.value
-              ? AppConstants.saveChangesButton
-              : AppConstants.addPlayerButtonForm
+      child: Obx(
+        () => ReusableButton(
+          onPressed: () async {
+             controller.savePlayer().whenComplete((){
+               Get.back();
+             });
+          },
+          isLoading: controller.isLoading.value,
+          text:
+              controller.isEditing.value
+                  ? AppConstants.saveChangesButton
+                  : AppConstants.addPlayerButtonForm,
+          backgroundColor: Colors.blue,
         ),
-        backgroundColor: Colors.blue,
       ),
     );
   }

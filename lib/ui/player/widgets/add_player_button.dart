@@ -14,16 +14,9 @@ class AddPlayerButton extends GetView<TeamDetailsController> {
       left: 24,
       right: 24,
       child: ReusableButton(
-        // Use ReusableButton
-        onPressed: () {
-          controller.goToAddPlayer(); // Call controller method
-        },
-        // icon: const Icon(Icons.add, color: Colors.white), // Ensure icon color is white
+        onPressed: () => controller.goToAddPlayer(),
         text: AppConstants.addPlayerButton,
-        // Use constant
         backgroundColor: Colors.blue,
-        // foregroundColor: Colors.white,
-        // elevation: 4,
       ),
     );
   }

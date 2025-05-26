@@ -73,6 +73,7 @@ class PlayerFormController extends GetxController {
     }
 
     isLoading.value = true;
+    print("isLoading value" + isLoading.value.toString());
     try {
       final player = Player(
         id: playerToEdit?.id,
@@ -94,6 +95,7 @@ class PlayerFormController extends GetxController {
           'Player updated successfully!',
           snackPosition: SnackPosition.BOTTOM,
         );
+
       } else {
         await _firestoreService.addPlayer(player);
         Get.snackbar(
@@ -102,7 +104,6 @@ class PlayerFormController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
         );
       }
-      Get.back(); // Go back to the previous screen (Team Details)
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -113,7 +114,11 @@ class PlayerFormController extends GetxController {
       );
       print('Error saving player: $e');
     } finally {
+
       isLoading.value = false;
+      print("isLoading value finally " + isLoading.value.toString());
+
+
     }
   }
 

@@ -15,12 +15,12 @@ import '../../utils/app_constants.dart'; // Constants
 class PlayerFormScreen extends GetView<PlayerFormController> {
   const PlayerFormScreen({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final InputDecoration customInputDecoration = buildCustomInputDecoration(textTheme);
+    final InputDecoration customInputDecoration = buildCustomInputDecoration(
+      textTheme,
+    );
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -34,9 +34,10 @@ class PlayerFormScreen extends GetView<PlayerFormController> {
           },
         ),
         title: Obx(
-              () => Text(
+          () => Text(
             controller.isEditing.value
-                ? AppConstants.editPlayerScreenTitle // Use constant
+                ? AppConstants
+                    .editPlayerScreenTitle // Use constant
                 : AppConstants.addPlayerScreenTitle, // Use constant
             style: textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
@@ -50,7 +51,11 @@ class PlayerFormScreen extends GetView<PlayerFormController> {
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.only(
-                left: 24.0, right: 24.0, bottom: 100), // Add bottom padding for button
+              left: 24.0,
+              right: 24.0,
+              bottom: 100,
+            ),
+            // Add bottom padding for button
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

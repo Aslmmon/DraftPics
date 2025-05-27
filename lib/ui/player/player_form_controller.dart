@@ -85,7 +85,7 @@ class PlayerFormController extends GetxController {
         // Get selected gender
         isCaptured: isCaptured.value,
         // Get selected isCaptured
-        teamId: teamId!, // Use the teamId
+        teamId: teamId!
       );
 
       if (isEditing.value) {
@@ -95,7 +95,6 @@ class PlayerFormController extends GetxController {
           'Player updated successfully!',
           snackPosition: SnackPosition.BOTTOM,
         );
-
       } else {
         await _firestoreService.addPlayer(player);
         Get.snackbar(
@@ -114,11 +113,8 @@ class PlayerFormController extends GetxController {
       );
       print('Error saving player: $e');
     } finally {
-
       isLoading.value = false;
       print("isLoading value finally " + isLoading.value.toString());
-
-
     }
   }
 

@@ -11,6 +11,7 @@ class Player {
   Gender gender; // Add gender field
   bool isCaptured; // Add isCaptured field
   String teamId; // Required for linking to team
+  DateTime? creationTime;
 
   Player({
     this.id,
@@ -20,6 +21,7 @@ class Player {
     this.gender = Gender.male, // Default to male
     this.isCaptured = false, // Default to false
     required this.teamId,
+    this.creationTime,
   });
 
   // Factory constructor to create a Player from a Firestore DocumentSnapshot
@@ -36,6 +38,7 @@ class Player {
       isCaptured: data['isCaptured'] as bool? ?? false,
       // Default to false if null
       teamId: data['teamId'] as String,
+      creationTime: (data['creationTime'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -52,10 +55,9 @@ class Player {
               .last, // Convert enum to string ('male' or 'female')
       'isCaptured': isCaptured,
       'teamId': teamId,
+      'creationTime': creationTime ?? FieldValue.serverTimestamp(),
     };
   }
-
-
 
   @override
   String toString() {

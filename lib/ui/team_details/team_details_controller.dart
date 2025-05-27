@@ -1,6 +1,8 @@
 // lib/ui/team_details/team_details_controller.dart
 import 'dart:async'; // Required for StreamSubscription
+import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
 import '../../data/model/PlayerModel.dart';
@@ -18,6 +20,7 @@ class TeamDetailsController extends GetxController {
 
   StreamSubscription<List<Player>>? _playersStreamSubscription;
   StreamSubscription<Team>? _teamStreamSubscription;
+  var isUploadingCsv = false.obs; // NEW: Loading state for CSV upload
 
   @override
   void onInit() {
@@ -25,31 +28,16 @@ class TeamDetailsController extends GetxController {
     final Team? argsTeam = Get.arguments as Team?;
     if (argsTeam != null) {
       team.value = argsTeam; // Set the initial team from arguments
-
-      // Listen to the team document for real-time updates (e.g., if name changes)
-      // _teamStreamSubscription = _firestoreService
-      //     .getTeamById(argsTeam.id!)
-      //     .listen((updatedTeam) {
-      //       if (updatedTeam != null) {
-      //         team.value = updatedTeam;
-      //       }
-      //     });
-
-      // Listen for players for this specific team
-      _playersStreamSubscription = _firestoreService
-          .getPlayersForTeam(argsTeam.id!)
-          .listen((playerList) {
-            players.value = playerList; // Update the observable list
-          });
-    } else {
-      // Handle case where no team is passed (e.g., show an error or go back)
-      Get.back();
-      Get.snackbar(
-        'Error',
-        'No team data received!',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      _listenToPlayers(team.value);
     }
+  }
+
+  void _listenToPlayers(Team value) {
+    _playersStreamSubscription = _firestoreService
+        .getPlayersForTeam(value.id!)
+        .listen((playerList) {
+          players.value = playerList; // Update the observable list
+        });
   }
 
   void goToAddPlayer() {
@@ -88,6 +76,60 @@ class TeamDetailsController extends GetxController {
         }
       },
     );
+  }
+
+  Future<void> pickAndUploadPlayersCsv() async {
+    if (team.value.id == null) {
+      Get.snackbar(
+        AppConstants.error,
+        AppConstants.teamIdMissingError,
+        // "Team ID is missing. Cannot upload players."
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      isUploadingCsv.value = true;
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+        allowMultiple: false,
+        withData: true,
+      );
+
+      if (result != null && result.files.single.bytes != null) {
+        Uint8List bytes = result.files.single.bytes! as Uint8List;
+        // Pass the current team's ID to the service
+        List<String> uploadStatus = await _firestoreService
+            .uploadPlayersFromCsv(bytes, team.value.id!);
+
+        String message = uploadStatus.join('\n');
+        Get.snackbar(
+          AppConstants.csvUploadResultTitle,
+          message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      } else {
+        Get.snackbar(
+          AppConstants.csvUploadCancelledTitle,
+          AppConstants.csvUploadCancelledMessage,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        AppConstants.error,
+        '${AppConstants.failedToUploadCsv} ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
+      print("Error picking/uploading CSV in TeamDetails: $e");
+    } finally {
+      isUploadingCsv.value = false;
+    }
   }
 
   @override

@@ -37,6 +37,8 @@ dependencies:
 
   data_table_2: ^2.6.0
   google_fonts: ^6.2.1
+  csv: ^6.0.0
+  file_picker: ^10.1.9
 
 
 dev_dependencies:

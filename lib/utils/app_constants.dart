@@ -5,6 +5,12 @@ class AppConstants {
   static const String addPlayerButtonForm =
       'Add Player'; // Renamed to avoid clash if needed
 
+
+  static const String csvUploadResultTitle = 'CSV Upload Result';
+  static const String csvUploadCancelledTitle = 'CSV Upload Cancelled';
+  static const String csvUploadCancelledMessage = 'No CSV file selected.';
+  static const String failedToUploadCsv = 'Failed to upload CSV:';
+
   // Section Headings / Field Labels
   static const String firstNameLabel = 'First Name';
   static const String lastNameLabel = 'Last Name';
@@ -23,7 +29,8 @@ class AppConstants {
   static const String allFieldsRequiredError = 'All fields are required!';
   static const String teamIdMissingError =
       'Team ID is missing. Cannot save player.';
-
+  static const String error =
+      'error';
   // Success Messages
   static const String playerAddedSuccess = 'Player added successfully!';
   static const String playerUpdatedSuccess = 'Player updated successfully!';

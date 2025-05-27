@@ -24,19 +24,29 @@ class PlayerListSection extends GetView<TeamDetailsController> {
           ),
         );
       } else {
-        return Column(
-          children:
-              controller.players
-                  .map(
-                    (player) => PlayerListItem(
-                      player: player,
-                      textTheme: textTheme,
-                      onEditPressed: () => controller.editPlayer(player),
-                      onDeletePressed: () => controller.deletePlayer(player)
-                    ),
-                  )
-                  .toList(),
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: SizedBox(
+            height: 500,
+            child: ListView.builder(
+              shrinkWrap: false,
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              itemCount: controller.players.length,
+              itemBuilder: (context, index) {
+                final  player = controller.players[index];
+                return PlayerListItem(
+                    player: player,
+                    textTheme: textTheme,
+                    onEditPressed: () => controller.editPlayer(player),
+                    onDeletePressed: () async => await controller.deletePlayer(player)
+                );
+                // Should not happen
+              },
+            ),
+          ),
         );
+
       }
     });
   }

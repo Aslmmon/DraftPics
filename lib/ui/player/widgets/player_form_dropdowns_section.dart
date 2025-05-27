@@ -21,35 +21,36 @@ class PlayerFormDropdownsSection extends GetView<PlayerFormController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const SizedBox(height: 16),
-        Text(
-          AppConstants.genderLabel, // Use constant
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Obx(
-              () => DropdownButtonFormField<Gender>(
-            value: controller.selectedGender.value,
-            decoration: customInputDecoration.copyWith(
-              hintText: AppConstants.selectGenderHint, // Use constant
-            ),
-            items: const [
-              DropdownMenuItem(value: Gender.male, child: Text(AppConstants.playerGenderMale)),
-              DropdownMenuItem(value: Gender.female, child: Text(AppConstants.playerGenderFemale)),
-            ],
-            onChanged: (Gender? newValue) {
-              if (newValue != null) {
-                controller.selectedGender.value = newValue;
-              }
-            },
-            dropdownColor: Colors.white,
-            style: textTheme.bodyLarge?.copyWith(color: Colors.black),
-            iconEnabledColor: Colors.blue,
-          ),
-        ),
-        const SizedBox(height: 16),
+        // Text(
+        //   AppConstants.genderLabel, // Use constant
+        //   style: textTheme.titleMedium?.copyWith(
+        //     fontWeight: FontWeight.bold,
+        //     color: Colors.black,
+        //   ),
+        // ),
+
+        // const SizedBox(height: 8),
+        // Obx(
+        //       () => DropdownButtonFormField<Gender>(
+        //     value: controller.selectedGender.value,
+        //     decoration: customInputDecoration.copyWith(
+        //       hintText: AppConstants.selectGenderHint, // Use constant
+        //     ),
+        //     items: const [
+        //       DropdownMenuItem(value: Gender.male, child: Text(AppConstants.playerGenderMale)),
+        //       DropdownMenuItem(value: Gender.female, child: Text(AppConstants.playerGenderFemale)),
+        //     ],
+        //     onChanged: (Gender? newValue) {
+        //       if (newValue != null) {
+        //         controller.selectedGender.value = newValue;
+        //       }
+        //     },
+        //     dropdownColor: Colors.white,
+        //     style: textTheme.bodyLarge?.copyWith(color: Colors.black),
+        //     iconEnabledColor: Colors.blue,
+        //   ),
+        // ),
+        // const SizedBox(height: 16),
         Text(
           AppConstants.capturedStatusLabel, // Use constant
           style: textTheme.titleMedium?.copyWith(

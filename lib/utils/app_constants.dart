@@ -14,7 +14,7 @@ class AppConstants {
   // Section Headings / Field Labels
   static const String firstNameLabel = 'First Name';
   static const String lastNameLabel = 'Last Name';
-  static const String positionLabel = 'Position';
+  static const String positionLabel = 'Jersey Number';
   static const String genderLabel = 'Gender';
   static const String capturedStatusLabel = 'Captured Status';
 
@@ -64,8 +64,9 @@ class AppConstants {
   // Section Headings
   static const String myTeamsHeading = 'My Teams';
   static const String playersHeading = 'Players';
-  static const String playerDetailsHeading = 'Player Details';
+  static const String playerDetailsHeading = 'Jersey Details';
   static const String capturedStatusHeading = 'Captured Status';
+
 
   // Hint Texts
   static const String searchTeamsHint = 'Search teams...';

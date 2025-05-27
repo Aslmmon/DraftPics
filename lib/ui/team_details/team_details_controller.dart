@@ -49,7 +49,7 @@ class TeamDetailsController extends GetxController {
   }
 
   // --- NEW: Delete Player Method ---
-  void deletePlayer(Player player) {
+  Future<void> deletePlayer(Player player) async {
     ReusableAlertDialog.show(
       title: AppConstants.deletePlayerTitle,
       content:

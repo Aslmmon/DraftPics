@@ -50,44 +50,55 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
 
         return Stack(
           children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TeamHeaderSection(team: team, textTheme: textTheme),
-                  const SizedBox(height: 24),
-                  PlayersHeadingSection(textTheme: textTheme),
-                  const SizedBox(height: 16),
-                  PlayerListSection(textTheme: textTheme),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TeamHeaderSection(team: team, textTheme: textTheme),
+                const SizedBox(height: 24),
+                PlayersHeadingSection(textTheme: textTheme),
+                const SizedBox(height: 16),
+                Expanded(child: PlayerListSection(textTheme: textTheme)),
+
+
+              ],
             ),
-            const AddPlayerButton(),
           ],
         );
       }),
       floatingActionButton: // NEW: CSV Upload Button for Players
-          Obx(
-        () => IconButton(
-          icon:
-              controller.isUploadingCsv.value
-                  ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.blue,
-                      strokeWidth: 2,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                onPressed: (){
+                controller.goToAddPlayer();
+              },
+              child: Icon(Icons.plus_one_outlined, color: Colors.blue),),
+              SizedBox(height: 20),
+              Obx(
+                      () => IconButton(
+              icon:
+                  controller.isUploadingCsv.value
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.blue,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      : const Icon(Icons.upload_file, color: Colors.blue),
+              onPressed:
+                  controller.isUploadingCsv.value
+                      ? null // Disable while uploading
+                      : () => controller.pickAndUploadPlayersCsv(),
+              tooltip: 'Upload Players from CSV',
+                      ),
                     ),
-                  )
-                  : const Icon(Icons.upload_file, color: Colors.blue),
-          onPressed:
-              controller.isUploadingCsv.value
-                  ? null // Disable while uploading
-                  : () => controller.pickAndUploadPlayersCsv(),
-          tooltip: 'Upload Players from CSV',
-        ),
-      ), // End of Obx
+            ],
+          ), // End of Obx
     );
   }
 }

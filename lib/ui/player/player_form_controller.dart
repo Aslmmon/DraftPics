@@ -44,8 +44,8 @@ class PlayerFormController extends GetxController {
   void _populateFields(Player player) {
     firstNameController.text = player.firstName;
     lastNameController.text = player.lastName;
-    positionController.text = player.position;
-    selectedGender.value = player.gender; // Set initial gender
+    positionController.text = player.jerseyNumber;
+    // selectedGender.value = player.gender; // Set initial gender
     isCaptured.value = player.isCaptured; // Set initial isCaptured
     teamId = player.teamId; // Ensure teamId is set for editing context
   }
@@ -80,12 +80,12 @@ class PlayerFormController extends GetxController {
         // Use existing ID if editing
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
-        position: positionController.text.trim(),
-        gender: selectedGender.value,
+        jerseyNumber: positionController.text.trim(),
+        // gender: selectedGender.value,
         // Get selected gender
         isCaptured: isCaptured.value,
         // Get selected isCaptured
-        teamId: teamId!
+        teamId: teamId!,
       );
 
       if (isEditing.value) {

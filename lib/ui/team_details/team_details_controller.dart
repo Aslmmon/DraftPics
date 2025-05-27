@@ -99,7 +99,7 @@ class TeamDetailsController extends GetxController {
       );
 
       if (result != null && result.files.single.bytes != null) {
-        Uint8List bytes = result.files.single.bytes! as Uint8List;
+        Uint8List bytes = result.files.single.bytes!;
         // Pass the current team's ID to the service
         List<String> uploadStatus = await _firestoreService
             .uploadPlayersFromCsv(bytes, team.value.id!);

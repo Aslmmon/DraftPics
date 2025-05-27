@@ -7,8 +7,9 @@ class Player {
   String? id; // Nullable for new players before ID is assigned by Firestore
   String firstName;
   String lastName;
-  String position;
-  Gender gender; // Add gender field
+  String jerseyNumber;
+
+  // Gender gender; // Add gender field
   bool isCaptured; // Add isCaptured field
   String teamId; // Required for linking to team
   DateTime? creationTime;
@@ -17,8 +18,8 @@ class Player {
     this.id,
     required this.firstName,
     required this.lastName,
-    required this.position,
-    this.gender = Gender.male, // Default to male
+    required this.jerseyNumber,
+    // this.gender = Gender.male, // Default to male
     this.isCaptured = false, // Default to false
     required this.teamId,
     this.creationTime,
@@ -31,9 +32,8 @@ class Player {
       id: doc.id,
       firstName: data['firstName'] as String,
       lastName: data['lastName'] as String,
-      position: data['position'] as String,
-      gender:
-          (data['gender'] as String?) == 'female' ? Gender.female : Gender.male,
+      jerseyNumber: data['position'] as String,
+      // gender: (data['gender'] as String?) == 'female' ? Gender.female : Gender.male,
       // Convert string to enum
       isCaptured: data['isCaptured'] as bool? ?? false,
       // Default to false if null
@@ -47,12 +47,12 @@ class Player {
     return {
       'firstName': firstName,
       'lastName': lastName,
-      'position': position,
-      'gender':
-          gender
-              .toString()
-              .split('.')
-              .last, // Convert enum to string ('male' or 'female')
+      'position': jerseyNumber,
+      // 'gender':
+      //     gender
+      //         .toString()
+      //         .split('.')
+      //         .last,
       'isCaptured': isCaptured,
       'teamId': teamId,
       'creationTime': creationTime ?? FieldValue.serverTimestamp(),
@@ -62,8 +62,8 @@ class Player {
   @override
   String toString() {
     return 'Player: $firstName $lastName ,\n'
-        'Position: $position,\n'
-        'Gender: ${gender.toString().split('.').last}\n'
+        'Position: $jerseyNumber,\n'
+        // 'Gender: ${gender.toString().split('.').last}\n'
         'Captured: ${isCaptured ? "Yes," : "No,"}\n'
         'Team ID: ${teamId ?? "N/A"}\n'
         'Player ID: ${id ?? "N/A"}';

@@ -105,11 +105,11 @@ class FirestoreService {
         (h) => h.toLowerCase() == 'lastname',
       );
       final int positionIndex = headers.indexWhere(
-        (h) => h.toLowerCase() == 'position',
+        (h) => h.toLowerCase() == 'jersey',
       );
-      final int genderIndex = headers.indexWhere(
-        (h) => h.toLowerCase() == 'gender',
-      );
+      // final int genderIndex = headers.indexWhere(
+      //   (h) => h.toLowerCase() == 'gender',
+      // );
       final int isCapturedIndex = headers.indexWhere(
         (h) => h.toLowerCase() == 'iscaptured',
       );
@@ -118,10 +118,10 @@ class FirestoreService {
       if (firstNameIndex == -1 ||
           lastNameIndex == -1 ||
           positionIndex == -1 ||
-          genderIndex == -1 ||
+          // genderIndex == -1 ||
           isCapturedIndex == -1) {
         uploadStatus.add(
-          "Missing required headers: firstName, lastName, position, gender, isCaptured. Please check your CSV format.",
+          "Missing required headers: firstName, lastName, jersey, isCaptured. Please check your CSV format.",
         );
         return uploadStatus;
       }
@@ -138,7 +138,7 @@ class FirestoreService {
               firstNameIndex,
               lastNameIndex,
               positionIndex,
-              genderIndex,
+              // genderIndex,
               isCapturedIndex,
             ].reduce((a, b) => a > b ? a : b)) {
           uploadStatus.add(
@@ -152,15 +152,14 @@ class FirestoreService {
           final String firstName = row[firstNameIndex]?.toString().trim() ?? '';
           final String lastName = row[lastNameIndex]?.toString().trim() ?? '';
           final String position = row[positionIndex]?.toString().trim() ?? '';
-          final String genderString =
-              row[genderIndex]?.toString().trim().toLowerCase() ?? '';
+          // final String genderString = row[genderIndex]?.toString().trim().toLowerCase() ?? '';
           final String isCapturedString =
               row[isCapturedIndex]?.toString().trim().toLowerCase() ?? '';
 
           if (firstName.isEmpty ||
               lastName.isEmpty ||
               position.isEmpty ||
-              genderString.isEmpty ||
+              // genderString.isEmpty ||
               isCapturedString.isEmpty) {
             uploadStatus.add(
               "Row ${i + 2}: Required field is empty. Skipping.",
@@ -169,18 +168,18 @@ class FirestoreService {
             continue;
           }
 
-          Gender gender;
-          if (genderString == 'male') {
-            gender = Gender.male;
-          } else if (genderString == 'female') {
-            gender = Gender.female;
-          } else {
-            uploadStatus.add(
-              "Row ${i + 2}: Invalid gender value ('$genderString'). Expected 'male' or 'female'. Skipping.",
-            );
-            errorCount++;
-            continue;
-          }
+          // Gender gender;
+          // if (genderString == 'male') {
+          //   gender = Gender.male;
+          // } else if (genderString == 'female') {
+          //   gender = Gender.female;
+          // } else {
+          //   uploadStatus.add(
+          //     "Row ${i + 2}: Invalid gender value ('$genderString'). Expected 'male' or 'female'. Skipping.",
+          //   );
+          //   errorCount++;
+          //   continue;
+          // }
 
           bool isCaptured;
           if (isCapturedString == 'true' ||
@@ -202,10 +201,10 @@ class FirestoreService {
           final newPlayer = Player(
             firstName: firstName,
             lastName: lastName,
-            position: position,
+            jerseyNumber: position,
             teamId: teamId,
             // <<< ALWAYS ASSIGN THE PASSED teamId
-            gender: gender,
+            // gender: gender,
             isCaptured: isCaptured,
             creationTime: DateTime.now(),
           );

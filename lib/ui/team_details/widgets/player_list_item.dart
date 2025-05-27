@@ -32,9 +32,7 @@ class PlayerListItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.0),
             // Smaller radius for player image
             child: Image.asset(
-              player.gender == Gender.male
-                  ? "assets/images/player_image.png"
-                  : "assets/images/player_female_image.png",
+              "assets/images/player_image.png",
               width: 50, // Example size
               height: 50, // Example size
               fit: BoxFit.cover,
@@ -53,17 +51,18 @@ class PlayerListItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "${AppConstants.playerDetailsHeading.split(' ').first} : ${player.position}", // Use constant and split
+                  "${AppConstants.playerDetailsHeading.split(' ').first} : ${player.jerseyNumber}",
+                  // Use constant and split
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),
-                Text(
-                  "${AppConstants.playerGender} : ${player.gender == Gender.male ? AppConstants.playerGenderMale : AppConstants.playerGenderFemale}",
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
+                // Text(
+                //   "${AppConstants.playerGender} : ${player.gender == Gender.male ? AppConstants.playerGenderMale : AppConstants.playerGenderFemale}",
+                //   style: textTheme.bodyMedium?.copyWith(
+                //     color: Colors.grey[600],
+                //   ),
+                // ),
                 Text(
                   "${AppConstants.capturedStatusHeading} : ${player.isCaptured ? "✅" : "❌"}", // Use constant
                   style: textTheme.bodyMedium?.copyWith(

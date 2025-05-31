@@ -126,6 +126,21 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ],
       ),
+      floatingActionButton: Obx(() => FloatingActionButton.extended(
+        onPressed: controller.isSyncing.value ? null : () => controller.syncDataFromSheets(),
+        label: controller.isSyncing.value
+            ? const Text('Syncing...')
+            : const Text('Sync from Sheet'),
+        icon: controller.isSyncing.value
+            ? const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+        )
+            : const Icon(Icons.sync),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      )),
     );
   }
 }

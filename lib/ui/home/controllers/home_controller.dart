@@ -160,7 +160,7 @@ class HomeController extends GetxController {
   }
 
   final String _appsScriptWebAppUrl =
-      "https://script.google.com/macros/s/AKfycbwMGgGz0QbDVBD8YiV5HdCCnF_oKr9Jxcz1ybBtlgt3hsIUnRmgnVBxnbr4JQ0M1r6N9A/exec";
+      "https://script.google.com/macros/s/AKfycbylE1yrLE38G_Ht4VOqiY6Cuq_HLU2LJWfrjxWk_ZVZpEd_lQUYQNp1Juc9b7L66Rrs/exec";
 
   Future<void> syncDataFromSheets() async {
     if (isSyncing.value) return;
@@ -176,18 +176,17 @@ class HomeController extends GetxController {
     );
 
     try {
-      final response = await http.get(Uri.parse(_appsScriptWebAppUrl));
+      final response = await  http.get(Uri.parse(_appsScriptWebAppUrl));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);
         if (responseBody['status'] == 'success') {
           Get.snackbar(
             'Sync Success',
-             'Google Sheet sync completed!',
+            'Google Sheet sync completed!',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.green,
             colorText: Colors.white,
-
           );
         } else {
           Get.snackbar(

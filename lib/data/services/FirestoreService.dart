@@ -10,7 +10,6 @@ import '../model/TeamModel.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String teamsCollections = "teams";
-
   // This is now the *name* of the subcollection, not a top-level collection path.
   String playersSubCollectionName = "players"; // Renamed for clarity
 
@@ -33,12 +32,14 @@ class FirestoreService {
   Stream<List<Player>> getAllPlayers() {
     // Requires a Firestore Collection Group index on 'players'
     return _db
-        .collectionGroup(playersSubCollectionName) // Use collectionGroup for all players across all teams
+        .collectionGroup(
+          playersSubCollectionName,
+        ) // Use collectionGroup for all players across all teams
         .snapshots()
         .map(
           (snapshot) =>
-          snapshot.docs.map((doc) => Player.fromFirestore(doc)).toList(),
-    );
+              snapshot.docs.map((doc) => Player.fromFirestore(doc)).toList(),
+        );
   }
 
   Future<void> addTeam(Team team) =>
@@ -58,14 +59,14 @@ class FirestoreService {
     // return _db.collection(teamsCollections).doc(teamId).delete();
 
     try {
-
       // 1. Get a reference to the team document
       final teamRef = _db.collection(teamsCollections).doc(teamId);
 
       // 2. Fetch all players in the subcollection.
       //    NOTE: For subcollections with >500 documents, you'd need
       //    to implement pagination (fetch 500, delete, fetch next 500, etc.).
-      final playersSnapshot = await teamRef.collection(playersSubCollectionName).get();
+      final playersSnapshot =
+          await teamRef.collection(playersSubCollectionName).get();
 
       // 3. If there are players, delete them in a batch
       if (playersSnapshot.docs.isNotEmpty) {
@@ -78,12 +79,10 @@ class FirestoreService {
 
       // 4. Finally, delete the team document
       await teamRef.delete();
-
     } catch (e) {
       rethrow;
     }
   }
-
 
   // --- End Team-related methods ---
 
@@ -150,7 +149,6 @@ class FirestoreService {
 
   // MODIFIED: deletePlayer now needs the teamId to locate the player
   Future<void> deletePlayer(String teamId, String playerId) async {
-
     await _db
         .collection(teamsCollections)
         .doc(teamId)
@@ -158,6 +156,9 @@ class FirestoreService {
         .doc(playerId)
         .delete();
   }
+
+
+
 
   // MODIFIED: uploadPlayersFromCsv now targets the specific team's subcollection for batch writes
   Future<List<String>> uploadPlayersFromCsv(

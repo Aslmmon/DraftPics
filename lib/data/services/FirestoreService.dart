@@ -30,6 +30,17 @@ class FirestoreService {
     return doc.exists ? Team.fromFirestore(doc) : null;
   }
 
+  Stream<List<Player>> getAllPlayers() {
+    // Requires a Firestore Collection Group index on 'players'
+    return _db
+        .collectionGroup(playersSubCollectionName) // Use collectionGroup for all players across all teams
+        .snapshots()
+        .map(
+          (snapshot) =>
+          snapshot.docs.map((doc) => Player.fromFirestore(doc)).toList(),
+    );
+  }
+
   Future<void> addTeam(Team team) =>
       _db.collection(teamsCollections).doc(team.id).set(team.toFirestore());
 
@@ -40,12 +51,39 @@ class FirestoreService {
         .update(team.toFirestore());
   }
 
-  Future<void> deleteTeam(String teamId) {
+  Future<void> deleteTeam(String teamId) async {
     // When deleting a team, you might also want to delete its subcollection players.
     // Firestore doesn't do this automatically. You'd need to fetch and delete them
     // or use a Cloud Function for cascade delete. For now, we'll keep it simple.
-    return _db.collection(teamsCollections).doc(teamId).delete();
+    // return _db.collection(teamsCollections).doc(teamId).delete();
+
+    try {
+
+      // 1. Get a reference to the team document
+      final teamRef = _db.collection(teamsCollections).doc(teamId);
+
+      // 2. Fetch all players in the subcollection.
+      //    NOTE: For subcollections with >500 documents, you'd need
+      //    to implement pagination (fetch 500, delete, fetch next 500, etc.).
+      final playersSnapshot = await teamRef.collection(playersSubCollectionName).get();
+
+      // 3. If there are players, delete them in a batch
+      if (playersSnapshot.docs.isNotEmpty) {
+        WriteBatch batch = _db.batch();
+        for (var doc in playersSnapshot.docs) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      }
+
+      // 4. Finally, delete the team document
+      await teamRef.delete();
+
+    } catch (e) {
+      rethrow;
+    }
   }
+
 
   // --- End Team-related methods ---
 

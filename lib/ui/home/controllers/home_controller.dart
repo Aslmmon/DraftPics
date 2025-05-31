@@ -39,13 +39,13 @@ class HomeController extends GetxController {
     });
 
     // Listen to changes in all players (requires Collection Group Query in FirestoreService)
-    // _playersStreamSubscription = _firestoreService.getAllPlayers().listen((
-    //     players,
-    //     ) {
-    //   allPlayers.value = players;
-    //   _updatePlayerCounts(); // Update counts when players change
-    //   _filterResults(); // Re-filter whenever players update
-    // });
+    _playersStreamSubscription = _firestoreService.getAllPlayers().listen((
+      players,
+    ) {
+      allPlayers.value = players;
+      _updatePlayerCounts(); // Update counts when players change
+      _filterResults(); // Re-filter whenever players update
+    });
 
     // Debounce search query to avoid excessive filtering on every keystroke
     _searchWorker = debounce(
@@ -124,7 +124,6 @@ class HomeController extends GetxController {
   void goToTeamDetails(Team team) =>
       Get.toNamed(AppRoutes.teamDetails, arguments: team);
 
-  // Deletes a team from Firestore
   Future<void> deleteTeam(Team team) async {
     isLoading.value = true; // Set loading state
     try {
@@ -160,9 +159,9 @@ class HomeController extends GetxController {
     }
   }
 
-
   final String _appsScriptWebAppUrl =
-      "https://script.google.com/macros/s/AKfycbwuZwK7uQaOPXCFBb6AoMIbsHQar-di5ot76TQPVpRA_1WmMJeLNHY3znw5eZF8F70Tgw/exec";
+      "https://script.google.com/macros/s/AKfycbwMGgGz0QbDVBD8YiV5HdCCnF_oKr9Jxcz1ybBtlgt3hsIUnRmgnVBxnbr4JQ0M1r6N9A/exec";
+
   Future<void> syncDataFromSheets() async {
     if (isSyncing.value) return;
 
@@ -177,9 +176,7 @@ class HomeController extends GetxController {
     );
 
     try {
-      final response = await http.get(
-        Uri.parse(_appsScriptWebAppUrl),
-      );
+      final response = await http.get(Uri.parse(_appsScriptWebAppUrl));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);

@@ -9,9 +9,12 @@ import '../model/TeamModel.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  String teamsCollections = "Teams";
-  String playersCollection = "Players";
+  String teamsCollections = "teams";
 
+  // This is now the *name* of the subcollection, not a top-level collection path.
+  String playersSubCollectionName = "players"; // Renamed for clarity
+
+  // --- Team-related methods: These are already fine as they deal with top-level 'Teams' ---
   Stream<List<Team>> getTeams() {
     return _db
         .collection(teamsCollections)
@@ -38,45 +41,86 @@ class FirestoreService {
   }
 
   Future<void> deleteTeam(String teamId) {
+    // When deleting a team, you might also want to delete its subcollection players.
+    // Firestore doesn't do this automatically. You'd need to fetch and delete them
+    // or use a Cloud Function for cascade delete. For now, we'll keep it simple.
     return _db.collection(teamsCollections).doc(teamId).delete();
   }
 
-  Future<void> deletePlayer(String playerId) async {
-    await _db.collection(playersCollection).doc(playerId).delete();
-  }
+  // --- End Team-related methods ---
 
+  // --- Player-related methods: SIGNIFICANT MODIFICATIONS ---
+
+  // NOTE: If all players are now strictly within team subcollections,
+  // getAllPlayers() would require a "Collection Group Query".
+  // This requires setting up a Firestore index in the Firebase Console.
+  // If you only ever need players *per team*, you might not need this method anymore.
+  // If you DO need all players across ALL teams, uncomment and remember to create the index.
+  /*
   Stream<List<Player>> getAllPlayers() {
+    // Requires a Firestore Collection Group index on 'players'
     return _db
-        .collection(playersCollection)
+        .collectionGroup(playersSubCollectionName) // Use collectionGroup for all players across all teams
         .snapshots()
         .map(
           (snapshot) =>
               snapshot.docs.map((doc) => Player.fromFirestore(doc)).toList(),
         );
   }
+  */
 
+  // MODIFIED: getPlayersForTeam now correctly queries the subcollection
   Stream<List<Player>> getPlayersForTeam(String teamId) => _db
-      .collection(playersCollection)
-      .where('teamId', isEqualTo: teamId) // Filter by teamId
+      .collection(teamsCollections) // Start from the 'Teams' collection
+      .doc(teamId) // Go into the specific team document
+      .collection(
+        playersSubCollectionName,
+      ) // Access the 'players' subcollection
       .snapshots()
       .map(
         (snapshot) =>
             snapshot.docs.map((doc) => Player.fromFirestore(doc)).toList(),
       );
 
-  Future<Player?> getPlayerById(String playerId) async {
-    final doc = await _db.collection(playersCollection).doc(playerId).get();
+  // MODIFIED: getPlayerById now needs the teamId to locate the player
+  Future<Player?> getPlayerById(String teamId, String playerId) async {
+    final doc =
+        await _db
+            .collection(teamsCollections)
+            .doc(teamId)
+            .collection(playersSubCollectionName)
+            .doc(playerId)
+            .get();
     return doc.exists ? Player.fromFirestore(doc) : null;
   }
 
-  Future<void> addPlayer(Player player) =>
-      _db.collection(playersCollection).doc().set(player.toFirestore());
+  // MODIFIED: addPlayer now targets the specific team's subcollection
+  Future<void> addPlayer(Player player, String teamId) => _db
+      .collection(teamsCollections)
+      .doc(teamId)
+      .collection(playersSubCollectionName)
+      .doc(player.id) // Use player.id if provided, otherwise .doc() for auto-ID
+      .set(player.toFirestore());
 
-  Future<void> updatePlayer(Player player) => _db
-      .collection(playersCollection)
-      .doc(player.id)
+  // MODIFIED: updatePlayer now targets the specific team's subcollection
+  Future<void> updatePlayer(Player player, String teamId) => _db
+      .collection(teamsCollections)
+      .doc(teamId)
+      .collection(playersSubCollectionName)
+      .doc(player.id!) // player.id must exist for update
       .update(player.toFirestore());
 
+  // MODIFIED: deletePlayer now needs the teamId to locate the player
+  Future<void> deletePlayer(String teamId, String playerId) async {
+    await _db
+        .collection(teamsCollections)
+        .doc(teamId)
+        .collection(playersSubCollectionName)
+        .doc(playerId)
+        .delete();
+  }
+
+  // MODIFIED: uploadPlayersFromCsv now targets the specific team's subcollection for batch writes
   Future<List<String>> uploadPlayersFromCsv(
     Uint8List csvBytes,
     String teamId,
@@ -97,7 +141,6 @@ class FirestoreService {
           csvTable[0].map((e) => e.toString().trim()).toList();
       final List<List<dynamic>> dataRows = csvTable.sublist(1);
 
-      // Define expected headers for PlayerModel (case-insensitive)
       final int firstNameIndex = headers.indexWhere(
         (h) => h.toLowerCase() == 'firstname',
       );
@@ -107,18 +150,13 @@ class FirestoreService {
       final int positionIndex = headers.indexWhere(
         (h) => h.toLowerCase() == 'jersey',
       );
-      // final int genderIndex = headers.indexWhere(
-      //   (h) => h.toLowerCase() == 'gender',
-      // );
       final int isCapturedIndex = headers.indexWhere(
         (h) => h.toLowerCase() == 'iscaptured',
       );
-      // No need to look for teamId in CSV anymore, as we'll use the passed teamId
 
       if (firstNameIndex == -1 ||
           lastNameIndex == -1 ||
           positionIndex == -1 ||
-          // genderIndex == -1 ||
           isCapturedIndex == -1) {
         uploadStatus.add(
           "Missing required headers: firstName, lastName, jersey, isCaptured. Please check your CSV format.",
@@ -132,13 +170,11 @@ class FirestoreService {
 
       for (int i = 0; i < dataRows.length; i++) {
         final row = dataRows[i];
-        // Ensure row has enough columns to avoid RangeError
         if (row.length <=
             [
               firstNameIndex,
               lastNameIndex,
               positionIndex,
-              // genderIndex,
               isCapturedIndex,
             ].reduce((a, b) => a > b ? a : b)) {
           uploadStatus.add(
@@ -152,14 +188,12 @@ class FirestoreService {
           final String firstName = row[firstNameIndex]?.toString().trim() ?? '';
           final String lastName = row[lastNameIndex]?.toString().trim() ?? '';
           final String position = row[positionIndex]?.toString().trim() ?? '';
-          // final String genderString = row[genderIndex]?.toString().trim().toLowerCase() ?? '';
           final String isCapturedString =
               row[isCapturedIndex]?.toString().trim().toLowerCase() ?? '';
 
           if (firstName.isEmpty ||
               lastName.isEmpty ||
               position.isEmpty ||
-              // genderString.isEmpty ||
               isCapturedString.isEmpty) {
             uploadStatus.add(
               "Row ${i + 2}: Required field is empty. Skipping.",
@@ -167,19 +201,6 @@ class FirestoreService {
             errorCount++;
             continue;
           }
-
-          // Gender gender;
-          // if (genderString == 'male') {
-          //   gender = Gender.male;
-          // } else if (genderString == 'female') {
-          //   gender = Gender.female;
-          // } else {
-          //   uploadStatus.add(
-          //     "Row ${i + 2}: Invalid gender value ('$genderString'). Expected 'male' or 'female'. Skipping.",
-          //   );
-          //   errorCount++;
-          //   continue;
-          // }
 
           bool isCaptured;
           if (isCapturedString == 'true' ||
@@ -198,18 +219,26 @@ class FirestoreService {
             continue;
           }
 
+          // Note: The Player model's constructor should allow a null ID for new players.
           final newPlayer = Player(
+            id: null,
+            // Let Firestore generate the ID when setting
             firstName: firstName,
             lastName: lastName,
             jerseyNumber: position,
             teamId: teamId,
-            // <<< ALWAYS ASSIGN THE PASSED teamId
-            // gender: gender,
+            // Store teamId as a field for data integrity if needed
             isCaptured: isCaptured,
             creationTime: DateTime.now(),
           );
 
-          DocumentReference playerRef = _db.collection(playersCollection).doc();
+          // MODIFIED: Batch write now targets the specific team's subcollection
+          DocumentReference playerRef =
+              _db
+                  .collection(teamsCollections)
+                  .doc(teamId)
+                  .collection(playersSubCollectionName)
+                  .doc(); // .doc() for auto-generated ID
           batch.set(playerRef, newPlayer.toFirestore());
           successCount++;
         } catch (e) {

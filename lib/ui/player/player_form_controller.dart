@@ -89,14 +89,14 @@ class PlayerFormController extends GetxController {
       );
 
       if (isEditing.value) {
-        await _firestoreService.updatePlayer(player);
+        await _firestoreService.updatePlayer(player,player.teamId);
         Get.snackbar(
           'Success',
           'Player updated successfully!',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
-        await _firestoreService.addPlayer(player);
+        await _firestoreService.addPlayer(player,player.teamId);
         Get.snackbar(
           'Success',
           'Player added successfully!',

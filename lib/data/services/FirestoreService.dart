@@ -150,6 +150,7 @@ class FirestoreService {
 
   // MODIFIED: deletePlayer now needs the teamId to locate the player
   Future<void> deletePlayer(String teamId, String playerId) async {
+
     await _db
         .collection(teamsCollections)
         .doc(teamId)

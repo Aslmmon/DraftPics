@@ -183,10 +183,11 @@ class HomeController extends GetxController {
         if (responseBody['status'] == 'success') {
           Get.snackbar(
             'Sync Success',
-            responseBody['message'] ?? 'Google Sheet sync completed!',
+             'Google Sheet sync completed!',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.green,
             colorText: Colors.white,
+
           );
         } else {
           Get.snackbar(

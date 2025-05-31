@@ -5,7 +5,6 @@ class AppConstants {
   static const String addPlayerButtonForm =
       'Add Player'; // Renamed to avoid clash if needed
 
-
   static const String csvUploadResultTitle = 'CSV Upload Result';
   static const String csvUploadCancelledTitle = 'CSV Upload Cancelled';
   static const String csvUploadCancelledMessage = 'No CSV file selected.';
@@ -16,7 +15,7 @@ class AppConstants {
   static const String lastNameLabel = 'Last Name';
   static const String positionLabel = 'Jersey Number';
   static const String genderLabel = 'Gender';
-  static const String capturedStatusLabel = 'Captured Status';
+  static const String capturedStatusLabel = 'Photography Status';
 
   // Hint Texts
   static const String firstNameHint = 'firstname';
@@ -29,8 +28,8 @@ class AppConstants {
   static const String allFieldsRequiredError = 'All fields are required!';
   static const String teamIdMissingError =
       'Team ID is missing. Cannot save player.';
-  static const String error =
-      'error';
+  static const String error = 'error';
+
   // Success Messages
   static const String playerAddedSuccess = 'Player added successfully!';
   static const String playerUpdatedSuccess = 'Player updated successfully!';
@@ -41,8 +40,8 @@ class AppConstants {
   // Player Details Display (for dropdowns)
   static const String playerGenderMale = 'Male';
   static const String playerGenderFemale = 'Female';
-  static const String playerCapturedYes = 'Yes (Captured)';
-  static const String playerCapturedNo = 'No (Not Captured)';
+  static const String playerCapturedYes = 'Yes (Photographed)';
+  static const String playerCapturedNo = 'No (Not Photographed)';
 
   // App Titles
   static const String appName = 'DraftPicks';
@@ -65,8 +64,7 @@ class AppConstants {
   static const String myTeamsHeading = 'My Teams';
   static const String playersHeading = 'Players';
   static const String playerDetailsHeading = 'Jersey Details';
-  static const String capturedStatusHeading = 'Captured Status';
-
+  static const String capturedStatusHeading = 'Photography Status';
 
   // Hint Texts
   static const String searchTeamsHint = 'Search teams...';
@@ -103,4 +101,5 @@ class AppConstants {
 
   // Player Details Display
   static const String playerGender = 'Gender';
+  static const String playerName = 'Name';
 }

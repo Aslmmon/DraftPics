@@ -77,7 +77,7 @@ class PlayerListItem extends StatelessWidget {
             onTap: () {
               Get.dialog(
                 FullScreenQrDialog(
-                  qrData: player.toString(), // Pass the data you want to encode
+                  player: player, // Pass the data you want to encode
                 ),
               );
             },

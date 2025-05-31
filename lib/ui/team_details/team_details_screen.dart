@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 
 // Import new components
 import '../../data/model/TeamModel.dart';
-import '../player/widgets/add_player_button.dart';
 
 import '../../utils/app_constants.dart'; // Import constants
 
@@ -58,8 +57,6 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
                 PlayersHeadingSection(textTheme: textTheme),
                 const SizedBox(height: 16),
                 Expanded(child: PlayerListSection(textTheme: textTheme)),
-
-
               ],
             ),
           ],
@@ -67,38 +64,40 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
       }),
       floatingActionButton: // NEW: CSV Upload Button for Players
           Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                onPressed: (){
-                controller.goToAddPlayer();
-              },
-              child: Icon(Icons.plus_one_outlined, color: Colors.blue),),
-              SizedBox(height: 20),
-              Obx(
-                      () => IconButton(
-              icon:
-                  controller.isUploadingCsv.value
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.blue,
-                          strokeWidth: 2,
-                        ),
-                      )
-                      : const Icon(Icons.upload_file, color: Colors.blue),
-              onPressed:
-                  controller.isUploadingCsv.value
-                      ? null // Disable while uploading
-                      : () => controller.pickAndUploadPlayersCsv(),
-              tooltip: 'Upload Players from CSV',
-                      ),
-                    ),
-            ],
-          ), // End of Obx
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            onPressed: () {
+              controller.goToAddPlayer();
+            },
+            child: Icon(Icons.plus_one_outlined, color: Colors.blue),
+          ),
+          SizedBox(height: 20),
+
+          // Obx(
+          //         () => IconButton(
+          // icon:
+          //     controller.isUploadingCsv.value
+          //         ? const SizedBox(
+          //           width: 20,
+          //           height: 20,
+          //           child: CircularProgressIndicator(
+          //             color: Colors.blue,
+          //             strokeWidth: 2,
+          //           ),
+          //         )
+          //         : const Icon(Icons.upload_file, color: Colors.blue),
+          // onPressed:
+          //     controller.isUploadingCsv.value
+          //         ? null // Disable while uploading
+          //         : () => controller.pickAndUploadPlayersCsv(),
+          // tooltip: 'Upload Players from CSV',
+          //         ),
+          //       ),
+        ],
+      ), // End of Obx
     );
   }
 }

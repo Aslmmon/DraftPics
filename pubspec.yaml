@@ -40,6 +40,14 @@ dependencies:
   csv: ^6.0.0
   file_picker: ^10.1.9
   http: ^1.4.0
+flutter_launcher_icons:
+  image_path_android: "assets/images/logo.png"
+  image_path_ios: "assets/images/logo.png"
+  android: true
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
 
 
 dev_dependencies:
@@ -47,6 +55,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

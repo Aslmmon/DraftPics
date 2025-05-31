@@ -1,17 +1,20 @@
+import 'package:draftpics/data/model/PlayerModel.dart';
+import 'package:draftpics/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Make sure you have this package imported
 
 class FullScreenQrDialog extends StatelessWidget {
-  final String qrData;
+  final Player player;
 
-  const FullScreenQrDialog({super.key, required this.qrData});
+  const FullScreenQrDialog({super.key, required this.player});
 
   @override
   Widget build(BuildContext context) {
     // Determine a suitable size for the QR code to fill most of the screen
     final double dialogSize =
-        MediaQuery.of(context).size.shortestSide * 0.8; // 80% of the shortest side
+        MediaQuery.of(context).size.shortestSide *
+        0.8; // 80% of the shortest side
 
     return AlertDialog(
       // Remove default padding and shape to allow the content to take up more space
@@ -44,7 +47,7 @@ class FullScreenQrDialog extends StatelessWidget {
               child: Center(
                 // Center the QR code within the available space
                 child: QrImageView(
-                  data: qrData,
+                  data: player.toString(),
                   version: QrVersions.auto,
                   size: dialogSize * 0.8,
                   // Make QR slightly smaller than container to allow for padding
@@ -64,12 +67,16 @@ class FullScreenQrDialog extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Scan this QR Code',
+              "${AppConstants.playerName} is : ${"${player.firstName} ${player.lastName}"}"
+              "\n${AppConstants.positionLabel} : ${player.jerseyNumber}\n"
+              " ${AppConstants.capturedStatusHeading} : ${player.isCaptured}",
               style: Get.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                fontSize: 22,
               ),
             ),
           ],
+
         ),
       ),
     );

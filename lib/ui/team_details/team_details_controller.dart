@@ -58,7 +58,7 @@ class TeamDetailsController extends GetxController {
       noText: AppConstants.cancelButton,
       onYesPressed: () async {
         try {
-          await _firestoreService.deletePlayer(player.id!,player.teamId);
+          await _firestoreService.deletePlayer(player.teamId,player.id!);
           Get.snackbar(
             'Success',
             'Player "${player.firstName} ${player.lastName}" deleted successfully!',

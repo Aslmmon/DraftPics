@@ -34,15 +34,20 @@ class HomeController extends GetxController {
     super.onInit();
     // Listen to changes in all teams
     _teamsStreamSubscription = _firestoreService.getTeams().listen((teams) {
+      // Option 1: Sort by creationTime (newest first)
+      teams.sort((a, b) => a.creationTime!.compareTo(b.creationTime!));
+
+
       allTeams.value = teams;
       _filterResults(); // Re-filter whenever teams update
     });
+
 
     // Listen to changes in all players (requires Collection Group Query in FirestoreService)
     _playersStreamSubscription = _firestoreService.getAllPlayers().listen((
       players,
     ) {
-      allPlayers.value = players;
+      allPlayers.value = players.reversed.toList();
       _updatePlayerCounts(); // Update counts when players change
       _filterResults(); // Re-filter whenever players update
     });
@@ -115,8 +120,9 @@ class HomeController extends GetxController {
           if (b.creationTime == null)
             return -1; // a has time, b doesn't, so b goes after a
 
+
           // Descending order (newest first): b.compareTo(a)
-          return b.creationTime!.compareTo(a.creationTime!);
+          return a.creationTime!.compareTo(b.creationTime!);
         });
   }
 

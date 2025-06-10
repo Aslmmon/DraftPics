@@ -62,11 +62,8 @@ class Player {
 
   @override
   String toString() {
-    return 'Player: $firstName $lastName ,\n'
+    return 'Player: $firstName $lastName,\n'
         'Position: $jerseyNumber,\n'
-        // 'Gender: ${gender.toString().split('.').last}\n'
-        'Captured: ${isCaptured ? "Yes," : "No,"}\n'
-        'Team ID: ${teamId ?? "N/A"}\n'
-        'Player ID: ${id ?? "N/A"}';
+        'Captured: ${isCaptured ? "Yes," : "No,"}\n';
   }
 }

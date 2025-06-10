@@ -1,8 +1,12 @@
 // lib/ui/player/player_form_controller.dart (Adjust path if different)
+import 'dart:convert';
+
 import 'package:flutter/material.dart'; // For TextEditingController
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import '../../data/model/PlayerModel.dart'; // Make sure PlayerModel is imported
-import '../../data/services/FirestoreService.dart'; // Make sure FirestoreService is imported
+import '../../data/services/FirestoreService.dart';
+import '../../utils/app_constants.dart'; // Make sure FirestoreService is imported
 
 class PlayerFormController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
@@ -89,14 +93,52 @@ class PlayerFormController extends GetxController {
       );
 
       if (isEditing.value) {
-        await _firestoreService.updatePlayer(player,player.teamId);
+        final updatedPlayer = Player(
+          id: playerToEdit!.id,
+          // Keep the existing ID
+          firstName: firstNameController.text.trim(),
+          lastName: lastNameController.text.trim(),
+          jerseyNumber: positionController.text.trim(),
+          // gender: selectedGender.value, // Uncomment if gender is updated
+          isCaptured: isCaptured.value,
+          teamId: teamId!,
+          // creationTime: playerToEdit!.creationTime, // Keep original creation time
+        );
+
+        // Determine which fields have changed for Google Sheet update
+        final Map<String, dynamic> sheetUpdatedFields = {};
+        if (updatedPlayer.firstName != playerToEdit!.firstName) {
+          sheetUpdatedFields['firstName'] = updatedPlayer.firstName;
+        }
+        if (updatedPlayer.lastName != playerToEdit!.lastName) {
+          sheetUpdatedFields['lastName'] = updatedPlayer.lastName;
+        }
+        if (updatedPlayer.jerseyNumber != playerToEdit!.jerseyNumber) {
+          sheetUpdatedFields['jerseyNumber'] = updatedPlayer.jerseyNumber;
+        }
+
+        if (updatedPlayer.isCaptured != playerToEdit!.isCaptured) {
+          sheetUpdatedFields['isCaptured'] = updatedPlayer.isCaptured;
+        }
+
+        if (sheetUpdatedFields.isNotEmpty) {
+          await updatePlayerInSheetOnly(
+            teamFirestoreId: teamId!,
+            originalFirstName: playerToEdit!.firstName,
+            originalLastName: playerToEdit!.lastName,
+            originalJerseyNumber: playerToEdit!.jerseyNumber,
+            updatedFields: sheetUpdatedFields,
+          );
+        }
+
+        await _firestoreService.updatePlayer(player, player.teamId);
         Get.snackbar(
           'Success',
           'Player updated successfully!',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
-        await _firestoreService.addPlayer(player,player.teamId);
+        await _firestoreService.addPlayer(player, player.teamId);
         Get.snackbar(
           'Success',
           'Player added successfully!',
@@ -115,6 +157,52 @@ class PlayerFormController extends GetxController {
     } finally {
       isLoading.value = false;
       print("isLoading value finally " + isLoading.value.toString());
+    }
+  }
+
+  Future<void> updatePlayerInSheetOnly({
+    required String teamFirestoreId,
+    // Still needed to identify the Google Sheet
+    required String
+    originalFirstName, // Player's current first name for sheet lookup
+    required String
+    originalLastName, // Player's current last name for sheet lookup
+    required String originalJerseyNumber,
+    // Player's current jersey number for sheet lookup
+    required Map<String, dynamic> updatedFields, // Only the fields that changed
+  }) async {
+    const String webAppUrl =
+        AppConstants
+            .appsScriptWebAppUrl; // Replace with your deployed Web App URL
+
+    try {
+      final Map<String, String> params = {
+        'action': 'editPlayerInSheet',
+        // <-- New action name
+        'teamFirestoreId': teamFirestoreId,
+        'originalFirstName': originalFirstName,
+        'originalLastName': originalLastName,
+        'originalJerseyNumber': originalJerseyNumber,
+        'updatedFields': jsonEncode(updatedFields),
+        // Stringify the map of updated fields
+      };
+
+      final response = await http.post(Uri.parse(webAppUrl), body: params);
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        print("response total is + " + responseBody.toString());
+        print('Player update in sheet successful: ${responseBody['message']}');
+        // Handle success in UI (e.g., show snackbar)
+      } else {
+        print(
+          'Player update in sheet failed: ${response.statusCode} - ${response.body}',
+        );
+        // Handle error in UI
+      }
+    } catch (e) {
+      print('Error updating player in sheet: $e');
+      // Handle exception
     }
   }
 

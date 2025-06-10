@@ -2,6 +2,7 @@ import 'dart:async'; // Required for StreamSubscription
 import 'dart:convert';
 import 'dart:developer' as Logger;
 
+import 'package:draftpics/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -37,11 +38,9 @@ class HomeController extends GetxController {
       // Option 1: Sort by creationTime (newest first)
       teams.sort((a, b) => a.creationTime!.compareTo(b.creationTime!));
 
-
       allTeams.value = teams;
       _filterResults(); // Re-filter whenever teams update
     });
-
 
     // Listen to changes in all players (requires Collection Group Query in FirestoreService)
     _playersStreamSubscription = _firestoreService.getAllPlayers().listen((
@@ -120,7 +119,6 @@ class HomeController extends GetxController {
           if (b.creationTime == null)
             return -1; // a has time, b doesn't, so b goes after a
 
-
           // Descending order (newest first): b.compareTo(a)
           return a.creationTime!.compareTo(b.creationTime!);
         });
@@ -165,9 +163,6 @@ class HomeController extends GetxController {
     }
   }
 
-  final String _appsScriptWebAppUrl =
-      "https://script.google.com/macros/s/AKfycbylE1yrLE38G_Ht4VOqiY6Cuq_HLU2LJWfrjxWk_ZVZpEd_lQUYQNp1Juc9b7L66Rrs/exec";
-
   Future<void> syncDataFromSheets() async {
     if (isSyncing.value) return;
 
@@ -182,10 +177,14 @@ class HomeController extends GetxController {
     );
 
     try {
-      final response = await  http.get(Uri.parse(_appsScriptWebAppUrl));
+      final response = await http.get(
+        Uri.parse(AppConstants.appsScriptWebAppUrl),
+      );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);
+        print("response is + " + responseBody.toString());
+
         if (responseBody['status'] == 'success') {
           Get.snackbar(
             'Sync Success',

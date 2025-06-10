@@ -102,4 +102,8 @@ class AppConstants {
   // Player Details Display
   static const String playerGender = 'Gender';
   static const String playerName = 'Name';
+
+
+  static const  String appsScriptWebAppUrl = "https://script.google.com/macros/s/AKfycbyqf59KVrbhs2PujePdaEe7DZsnttoUK2YCQNPYu7y_3yWXl1i6Vmu5N4w1Al-mCXtq/exec";
+
 }

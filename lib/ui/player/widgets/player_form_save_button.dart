@@ -17,9 +17,9 @@ class PlayerFormSaveButton extends GetView<PlayerFormController> {
       child: Obx(
         () => ReusableButton(
           onPressed: () async {
-             controller.savePlayer().whenComplete((){
-               Get.back();
-             });
+            controller.savePlayer().whenComplete(() {
+              Get.back();
+            });
           },
           isLoading: controller.isLoading.value,
           text:

@@ -60,7 +60,7 @@ class PlayerFormInputSection extends GetView<PlayerFormController> {
         ),
         const SizedBox(height: 8),
         ReusableTextField(
-          controller: controller.positionController,
+          controller: controller.jerseyNumberController,
           hintText: AppConstants.enterPositionHint, // Use constant
           keyboardType: TextInputType.text,
           decoration: customInputDecoration,

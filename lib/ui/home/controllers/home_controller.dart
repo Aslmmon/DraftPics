@@ -1,6 +1,7 @@
 import 'dart:async'; // Required for StreamSubscription
 import 'dart:convert';
 import 'dart:developer' as Logger;
+import 'dart:isolate';
 
 import 'package:draftpics/utils/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -177,15 +178,21 @@ class HomeController extends GetxController {
     );
 
     try {
-      final response = await http.get(
-        Uri.parse(AppConstants.appsScriptWebAppUrl),
-      );
+      final response = await _firestoreService.syncSheets();
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
+       //  final Map<String, dynamic> responseBody = json.decode(response.body);
+        final receivePort = ReceivePort();
+        await Isolate.spawn(
+          _decodeJsonInIsolate,
+          response.body,
+          onExit: receivePort.sendPort,
+        );
+         final responseBody =    await receivePort.first; // Wait for the decoded result
+
         print("response is + " + responseBody.toString());
 
-        if (responseBody['status'] == 'success') {
+      //  if (responseBody['status'] == 'success') {
           Get.snackbar(
             'Sync Success',
             'Google Sheet sync completed!',
@@ -193,15 +200,7 @@ class HomeController extends GetxController {
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
-        } else {
-          Get.snackbar(
-            'Sync Failed',
-            responseBody['message'] ?? 'Google Sheet sync failed.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-        }
+      //  }
       } else {
         print(response.body.toString());
         print(response.body);
@@ -217,15 +216,6 @@ class HomeController extends GetxController {
           'Apps Script Web App HTTP Error: ${response.statusCode} - ${response.body}',
         );
       }
-    } catch (e) {
-      print('Error triggering sync directly: $e');
-      Get.snackbar(
-        'Sync Error',
-        'An unexpected error occurred during sync: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
     } finally {
       isSyncing.value = false;
     }
@@ -238,4 +228,8 @@ class HomeController extends GetxController {
     _searchWorker.dispose();
     super.onClose();
   }
+}
+
+dynamic _decodeJsonInIsolate(String jsonString) {
+  return jsonDecode(jsonString);
 }

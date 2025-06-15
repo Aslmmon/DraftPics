@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
+import 'package:draftpics/utils/app_constants.dart';
+import 'package:http/http.dart' as http;
 
 import '../model/PlayerModel.dart';
 import '../model/TeamModel.dart';
@@ -10,6 +12,7 @@ import '../model/TeamModel.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String teamsCollections = "teams";
+
   // This is now the *name* of the subcollection, not a top-level collection path.
   String playersSubCollectionName = "players"; // Renamed for clarity
 
@@ -53,18 +56,8 @@ class FirestoreService {
   }
 
   Future<void> deleteTeam(String teamId) async {
-    // When deleting a team, you might also want to delete its subcollection players.
-    // Firestore doesn't do this automatically. You'd need to fetch and delete them
-    // or use a Cloud Function for cascade delete. For now, we'll keep it simple.
-    // return _db.collection(teamsCollections).doc(teamId).delete();
-
     try {
-      // 1. Get a reference to the team document
       final teamRef = _db.collection(teamsCollections).doc(teamId);
-
-      // 2. Fetch all players in the subcollection.
-      //    NOTE: For subcollections with >500 documents, you'd need
-      //    to implement pagination (fetch 500, delete, fetch next 500, etc.).
       final playersSnapshot =
           await teamRef.collection(playersSubCollectionName).get();
 
@@ -156,9 +149,6 @@ class FirestoreService {
         .doc(playerId)
         .delete();
   }
-
-
-
 
   // MODIFIED: uploadPlayersFromCsv now targets the specific team's subcollection for batch writes
   Future<List<String>> uploadPlayersFromCsv(
@@ -309,5 +299,83 @@ class FirestoreService {
       print("Error in uploadPlayersFromCsv: $e");
     }
     return uploadStatus;
+  }
+
+  Future<void> updatePlayerInSheet({
+    required String teamFirestoreId,
+    required String originalFirstName,
+    required String originalLastName,
+    required String
+    originalJerseyNumber, // Added this back for clarity in sheet lookup
+    required Map<String, dynamic> updatedFields,
+  }) async {
+    final Map<String, String> params = {
+      'action': 'editPlayerInSheet',
+      'teamFirestoreId': teamFirestoreId,
+      'originalFirstName': originalFirstName,
+      'originalLastName': originalLastName,
+      'originalJerseyNumber': originalJerseyNumber,
+      // Ensure this is sent for lookup
+      'updatedFields': jsonEncode(updatedFields),
+    };
+
+    // --- Debugging the Request ---
+    print('--- HTTP Request Details (GoogleSheetService) ---');
+    print('URL: ${AppConstants.appsScriptWebAppUrl}');
+    print('Method: POST');
+    print('Request Body (params):');
+    params.forEach((key, value) {
+      print('  $key: $value');
+    });
+    print('--------------------------------------------------');
+    // --- End Debugging the Request ---
+
+    try {
+      final response = await http.post(
+        Uri.parse(AppConstants.appsScriptWebAppUrl),
+        body: params,
+      );
+
+      // --- Debugging the Response ---
+      print('--- HTTP Response Details (GoogleSheetService) ---');
+      print('URL: ${response.request?.url}');
+      print('Status Code: ${response.statusCode}');
+      print('Response Headers:');
+      response.headers.forEach((key, value) {
+        print('  $key: $value');
+      });
+      print('Response Body: ${response.body}');
+      print('--------------------------------------------------');
+      // --- End Debugging the Response ---
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        print("Google Sheet update response: ${responseBody.toString()}");
+        if (responseBody['status'] == 'success') {
+          print(
+            'Player update in sheet successful: ${responseBody['message']}',
+          );
+          // No Get.snackbar here, let the controller handle UI feedback
+        } else {
+          // Specific error from the Apps Script
+          throw Exception('Sheet API Error: ${responseBody['message']}');
+        }
+      } else {
+        throw Exception(
+          'Failed to update player in sheet: HTTP ${response.statusCode} - ${response.body}',
+        );
+      }
+    } catch (e) {
+      print('Error updating player in sheet (GoogleSheetService): $e');
+      rethrow; // Re-throw to allow the controller to catch and show snackbar
+    }
+  }
+
+  Future<http.Response> syncSheets() async {
+    final response = await http.get(
+      Uri.parse(AppConstants.appsScriptWebAppUrl),
+    );
+
+    return response;
   }
 }

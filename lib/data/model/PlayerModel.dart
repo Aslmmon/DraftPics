@@ -19,12 +19,10 @@ class Player {
     required this.firstName,
     required this.lastName,
     required this.jerseyNumber,
-    // this.gender = Gender.male, // Default to male
     this.isCaptured = false, // Default to false
     required this.teamId,
     this.creationTime,
   });
-
 
   // Factory constructor to create a Player from a Firestore DocumentSnapshot
   factory Player.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -34,10 +32,7 @@ class Player {
       firstName: data?['firstName'] as String,
       lastName: data?['lastName'] as String,
       jerseyNumber: data?['jerseyNumber'] as String,
-      // gender: (data['gender'] as String?) == 'female' ? Gender.female : Gender.male,
-      // Convert string to enum
       isCaptured: data?['isCaptured'] as bool? ?? false,
-      // Default to false if null
       teamId: data?['teamId'] as String,
       creationTime: (data?['creationTime'] as Timestamp?)?.toDate(),
     );
@@ -49,11 +44,6 @@ class Player {
       'firstName': firstName,
       'lastName': lastName,
       'jerseyNumber': jerseyNumber,
-      // 'gender':
-      //     gender
-      //         .toString()
-      //         .split('.')
-      //         .last,
       'isCaptured': isCaptured,
       'teamId': teamId,
       'creationTime': creationTime ?? FieldValue.serverTimestamp(),

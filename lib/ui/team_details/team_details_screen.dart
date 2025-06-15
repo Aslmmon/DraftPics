@@ -75,27 +75,6 @@ class TeamDetailsScreen extends GetView<TeamDetailsController> {
             child: Icon(Icons.plus_one_outlined, color: Colors.blue),
           ),
           SizedBox(height: 20),
-
-          // Obx(
-          //         () => IconButton(
-          // icon:
-          //     controller.isUploadingCsv.value
-          //         ? const SizedBox(
-          //           width: 20,
-          //           height: 20,
-          //           child: CircularProgressIndicator(
-          //             color: Colors.blue,
-          //             strokeWidth: 2,
-          //           ),
-          //         )
-          //         : const Icon(Icons.upload_file, color: Colors.blue),
-          // onPressed:
-          //     controller.isUploadingCsv.value
-          //         ? null // Disable while uploading
-          //         : () => controller.pickAndUploadPlayersCsv(),
-          // tooltip: 'Upload Players from CSV',
-          //         ),
-          //       ),
         ],
       ), // End of Obx
     );

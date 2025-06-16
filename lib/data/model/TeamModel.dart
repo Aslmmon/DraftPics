@@ -36,4 +36,9 @@ class Team {
       // Set timestamp on creation
     };
   }
+
+  @override
+  String toString() {
+    return name;
+  }
 }

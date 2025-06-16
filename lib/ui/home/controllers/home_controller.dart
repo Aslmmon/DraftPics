@@ -37,7 +37,7 @@ class HomeController extends GetxController {
     // Listen to changes in all teams
     _teamsStreamSubscription = _firestoreService.getTeams().listen((teams) {
       // Option 1: Sort by creationTime (newest first)
-      teams.sort((a, b) => a.creationTime!.compareTo(b.creationTime!));
+      // teams.sort((a, b) => a.creationTime!.compareTo(b.creationTime!));
 
       allTeams.value = teams;
       _filterResults(); // Re-filter whenever teams update
@@ -108,21 +108,25 @@ class HomeController extends GetxController {
       );
     }
 
+
+
     // Convert the Set back to a List and assign to searchResults
     // Sort the results, e.g., by creation time (newest first)
-    searchResults.value =
-        uniqueFilteredTeams.toList()..sort((a, b) {
-          // Handle cases where creationTime might be null (e.g., old data without it)
-          // Null values will be considered "older" (placed at the end for descending sort)
-          if (a.creationTime == null && b.creationTime == null) return 0;
-          if (a.creationTime == null)
-            return 1; // b has time, a doesn't, so a goes after b
-          if (b.creationTime == null)
-            return -1; // a has time, b doesn't, so b goes after a
 
-          // Descending order (newest first): b.compareTo(a)
-          return a.creationTime!.compareTo(b.creationTime!);
-        });
+     searchResults.value = uniqueFilteredTeams.toList();
+    // searchResults.value =
+    //     uniqueFilteredTeams.toList()..sort((a, b) {
+    //       // Handle cases where creationTime might be null (e.g., old data without it)
+    //       // Null values will be considered "older" (placed at the end for descending sort)
+    //       if (a.creationTime == null && b.creationTime == null) return 0;
+    //       if (a.creationTime == null)
+    //         return 1; // b has time, a doesn't, so a goes after b
+    //       if (b.creationTime == null)
+    //         return -1; // a has time, b doesn't, so b goes after a
+    //
+    //       // Descending order (newest first): b.compareTo(a)
+    //       return a.creationTime!.compareTo(b.creationTime!);
+    //     });
   }
 
   // Navigates to the team details screen, passing the selected team object
@@ -181,26 +185,27 @@ class HomeController extends GetxController {
       final response = await _firestoreService.syncSheets();
 
       if (response.statusCode == 200) {
-       //  final Map<String, dynamic> responseBody = json.decode(response.body);
+        //  final Map<String, dynamic> responseBody = json.decode(response.body);
         final receivePort = ReceivePort();
         await Isolate.spawn(
           _decodeJsonInIsolate,
           response.body,
           onExit: receivePort.sendPort,
         );
-         final responseBody =    await receivePort.first; // Wait for the decoded result
+        final responseBody =
+            await receivePort.first; // Wait for the decoded result
 
         print("response is + " + responseBody.toString());
 
-      //  if (responseBody['status'] == 'success') {
-          Get.snackbar(
-            'Sync Success',
-            'Google Sheet sync completed!',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-          );
-      //  }
+        //  if (responseBody['status'] == 'success') {
+        Get.snackbar(
+          'Sync Success',
+          'Google Sheet sync completed!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        //  }
       } else {
         print(response.body.toString());
         print(response.body);

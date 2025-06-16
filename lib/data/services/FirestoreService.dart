@@ -20,6 +20,7 @@ class FirestoreService {
   Stream<List<Team>> getTeams() {
     return _db
         .collection(teamsCollections)
+        .orderBy('orderIndex', descending: false) // <--- THIS IS THE KEY CHANGE
         .snapshots()
         .map(
           (snapshot) =>
@@ -147,6 +148,13 @@ class FirestoreService {
         .doc(teamId)
         .collection(playersSubCollectionName)
         .doc(playerId)
+        .delete();
+  }
+
+  Future<void> deleteTeams(String teamId, String playerId) async {
+    await _db
+        .collection(teamsCollections)
+        .doc(teamId)
         .delete();
   }
 

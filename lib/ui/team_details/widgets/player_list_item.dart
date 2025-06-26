@@ -23,6 +23,9 @@ class PlayerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isSmallDevice = screenWidth < AppConstants.smallDeviceBreakpoint;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
       child: Row(
@@ -33,12 +36,13 @@ class PlayerListItem extends StatelessWidget {
             // Smaller radius for player image
             child: Image.asset(
               "assets/images/player_image.png",
-              width: 50, // Example size
-              height: 50, // Example size
+              width: isSmallDevice ? 25 : 50, // Example size
+              height: isSmallDevice ? 25 : 50, // Example size
               fit: BoxFit.cover,
             ),
           ),
           const SizedBox(width: 16),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,6 +52,7 @@ class PlayerListItem extends StatelessWidget {
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
+                    fontSize: isSmallDevice ? 14 : 18,
                   ),
                 ),
                 Text(
@@ -55,24 +60,19 @@ class PlayerListItem extends StatelessWidget {
                   // Use constant and split
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
+                    fontSize: isSmallDevice ? 12 : 16,
                   ),
                 ),
-                // Text(
-                //   "${AppConstants.playerGender} : ${player.gender == Gender.male ? AppConstants.playerGenderMale : AppConstants.playerGenderFemale}",
-                //   style: textTheme.bodyMedium?.copyWith(
-                //     color: Colors.grey[600],
-                //   ),
-                // ),
                 Text(
                   "${AppConstants.capturedStatusHeading} : ${player.isCaptured ? "✅" : "❌"}", // Use constant
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
+                    fontSize: isSmallDevice ? 10 : 14,
                   ),
                 ),
               ],
             ),
           ),
-          // QR Code Button
           GestureDetector(
             onTap: () {
               Get.dialog(
@@ -91,11 +91,14 @@ class PlayerListItem extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.grey),
             onPressed: onEditPressed,
+            iconSize: isSmallDevice ? 20.0 : 30.0,
           ),
+
           // Delete Button (New)
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: onDeletePressed, // Use the new callback
+            iconSize: isSmallDevice ? 20.0 : 30.0,
           ),
         ],
       ),

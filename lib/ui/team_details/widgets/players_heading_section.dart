@@ -5,13 +5,13 @@ import '../../../../../utils/app_constants.dart'; // Import constants
 class PlayersHeadingSection extends StatelessWidget {
   final TextTheme textTheme;
 
-  const PlayersHeadingSection({
-    super.key,
-    required this.textTheme,
-  });
+  const PlayersHeadingSection({super.key, required this.textTheme});
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isSmallDevice = screenWidth < AppConstants.smallDeviceBreakpoint;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Text(
@@ -19,6 +19,7 @@ class PlayersHeadingSection extends StatelessWidget {
         style: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: Colors.black,
+          fontSize: isSmallDevice ? 16 : 24,
         ),
       ),
     );

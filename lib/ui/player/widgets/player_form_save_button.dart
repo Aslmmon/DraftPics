@@ -10,6 +10,7 @@ class PlayerFormSaveButton extends GetView<PlayerFormController> {
 
   @override
   Widget build(BuildContext context) {
+
     return Positioned(
       bottom: 24,
       left: 24,
@@ -17,9 +18,7 @@ class PlayerFormSaveButton extends GetView<PlayerFormController> {
       child: Obx(
         () => ReusableButton(
           onPressed: () async {
-            controller.savePlayer().whenComplete(() {
-              Get.back();
-            });
+            controller.savePlayer();
           },
           isLoading: controller.isLoading.value,
           text:

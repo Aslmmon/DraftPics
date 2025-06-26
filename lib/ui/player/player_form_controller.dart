@@ -109,7 +109,6 @@ class PlayerFormController extends GetxController {
         await _firestoreService.addPlayer(currentPlayer, _teamId!);
         _showSuccessSnackbar('Player added successfully!');
       }
-    //  Get.back(); // Navigate back after successful save/update
     } catch (e) {
       _showErrorSnackbar('Failed to save player: ${e.toString()}');
       print('Error saving player: $e'); // Keep print for debug console
@@ -144,7 +143,7 @@ class PlayerFormController extends GetxController {
 
     // Always attempt to update Firestore
     await _firestoreService.updatePlayer(updatedPlayer, _teamId!);
-  //  _showSuccessSnackbar('Player updated successfully!');
+    //  _showSuccessSnackbar('Player updated successfully!');
   }
 
   /// Compares the updated player with the original to find changed fields.

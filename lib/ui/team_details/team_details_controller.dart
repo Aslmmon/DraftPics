@@ -1,5 +1,5 @@
 // lib/ui/team_details/team_details_controller.dart
-import 'dart:async'; // Required for StreamSubscription
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -9,35 +9,79 @@ import '../../data/model/PlayerModel.dart';
 import '../../data/model/TeamModel.dart';
 import '../../data/services/FirestoreService.dart';
 import '../../routes/app_routes.dart';
-import '../../utils/app_constants.dart'; // Import constants
+import '../../utils/app_constants.dart';
 
 class TeamDetailsController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
 
-  final Rx<Team> team =
-      Team(name: 'Loading...', id: '').obs; // Initialize with a dummy team
-  final RxList<Player> players = <Player>[].obs; // Reactive list of players
+  final Rx<Team> team = Team(name: 'Loading...', id: '').obs;
+  final RxList<Player> players = <Player>[].obs; // Reactive list of all players
+
+  // Reactive variable for the selected jersey number filter
+  // Use 'null' to represent "All Jersey Numbers"
+  final Rx<String?> selectedJerseyNumber = Rx<String?>(null);
 
   StreamSubscription<List<Player>>? _playersStreamSubscription;
   StreamSubscription<Team>? _teamStreamSubscription;
-  var isUploadingCsv = false.obs; // NEW: Loading state for CSV upload
+  var isUploadingCsv = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     final Team? argsTeam = Get.arguments as Team?;
     if (argsTeam != null) {
-      team.value = argsTeam; // Set the initial team from arguments
+      team.value = argsTeam;
       _listenToPlayers(team.value);
     }
+
+    // Initialize selectedJerseyNumber to null (show all players)
+    selectedJerseyNumber.value = null;
   }
 
   void _listenToPlayers(Team value) {
     _playersStreamSubscription = _firestoreService
         .getPlayersForTeam(value.id!)
         .listen((playerList) {
-          players.value = playerList; // Update the observable list
+          players.value =
+              playerList; // Update the observable list of all players
+          // When players update, reset filter if current selection is no longer valid
+          if (selectedJerseyNumber.value != null &&
+              !uniqueJerseyNumbers.contains(selectedJerseyNumber.value)) {
+            selectedJerseyNumber.value =
+                null; // Reset to "All" if current filter is gone
+          }
         });
+  }
+
+  // Computed property to get unique jersey numbers for the dropdown
+  // It returns a list of integers (jersey numbers)
+  RxList<String> get uniqueJerseyNumbers {
+    final Set<String> numbers = {};
+    for (var player in players) {
+      if (player.jerseyNumber != null) {
+        numbers.add(player.jerseyNumber!);
+      }
+    }
+    final List<String> sortedNumbers = numbers.toList();
+    sortedNumbers.sort(); // Sort numbers for consistent dropdown order
+    return sortedNumbers.obs; // Make it observable if you want UI to react
+  }
+
+  // Computed property for the list of players after applying the jersey number filter
+  RxList<Player> get filteredPlayers {
+    if (selectedJerseyNumber.value == null) {
+      return players; // If "All" is selected, return all players
+    } else {
+      return players
+          .where((player) => player.jerseyNumber == selectedJerseyNumber.value)
+          .toList()
+          .obs; // Filter and return observable list
+    }
+  }
+
+  // Method to change the selected jersey number
+  void setJerseyNumberFilter(String? jerseyNumber) {
+    selectedJerseyNumber.value = jerseyNumber;
   }
 
   void goToAddPlayer() {
@@ -48,7 +92,6 @@ class TeamDetailsController extends GetxController {
     Get.toNamed(AppRoutes.playerFromScreen, arguments: player);
   }
 
-  // --- NEW: Delete Player Method ---
   Future<void> deletePlayer(Player player) async {
     ReusableAlertDialog.show(
       title: AppConstants.deletePlayerTitle,
@@ -83,7 +126,6 @@ class TeamDetailsController extends GetxController {
       Get.snackbar(
         AppConstants.error,
         AppConstants.teamIdMissingError,
-        // "Team ID is missing. Cannot upload players."
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -100,7 +142,6 @@ class TeamDetailsController extends GetxController {
 
       if (result != null && result.files.single.bytes != null) {
         Uint8List bytes = result.files.single.bytes!;
-        // Pass the current team's ID to the service
         List<String> uploadStatus = await _firestoreService
             .uploadPlayersFromCsv(bytes, team.value.id!);
 

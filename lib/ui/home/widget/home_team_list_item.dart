@@ -1,7 +1,8 @@
+// lib/ui/home/widget/home_team_list_item.dart
+import 'package:draftpics/utils/app_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
 
 import '../../../data/model/TeamModel.dart';
@@ -23,12 +24,40 @@ class TeamListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current screen width
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isSmallDevice = screenWidth < AppConstants.smallDeviceBreakpoint;
+
+    // Adjust sizes based on whether it's a small device
+    final double avatarRadius = isSmallDevice ? 20.0 : 40.0;
+    final double horizontalSpacing = isSmallDevice ? 12.0 : 16.0;
+    final double verticalPadding = isSmallDevice ? 2.0 : 8.0;
+    final double containerPadding = isSmallDevice ? 12.0 : 16.0;
+    final double iconSize = isSmallDevice ? 20.0 : 24.0; // For delete icon
+
+    final TextStyle? titleStyle =
+        isSmallDevice
+            ? textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontSize: 15,
+            )
+            : textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            );
+
+    final TextStyle? subtitleStyle =
+        isSmallDevice
+            ? textTheme.bodySmall?.copyWith(color: Colors.grey)
+            : textTheme.bodyMedium?.copyWith(color: Colors.grey);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: verticalPadding),
       child: InkWell(
         onTap: () => controller.goToTeamDetails(team),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(containerPadding),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -41,34 +70,28 @@ class TeamListItem extends StatelessWidget {
               ),
             ],
           ),
-
           child: Row(
             children: [
               CircleAvatar(
-                radius: 40,
+                radius: avatarRadius, // Adjusted size
                 backgroundColor: Colors.grey[200],
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.asset("assets/images/logo.png"),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: horizontalSpacing), // Adjusted spacing
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       team.name,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                      style: titleStyle, // Adjusted style
                     ),
                     Text(
-                      // --- Using team.playerCount ---
                       '$count players',
-                      // Assuming 'playerCount' is available in your Team model
-                      style: textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                      style: subtitleStyle, // Adjusted style
                     ),
                   ],
                 ),
@@ -90,7 +113,10 @@ class TeamListItem extends StatelessWidget {
                     },
                   );
                 },
-                icon: Icon(Icons.delete_forever_outlined),
+                icon: Icon(
+                  Icons.delete_forever_outlined,
+                  size: iconSize, // Adjusted size
+                ),
               ),
             ],
           ),

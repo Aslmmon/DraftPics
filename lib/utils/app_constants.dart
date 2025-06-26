@@ -5,6 +5,10 @@ class AppConstants {
   static const String addPlayerButtonForm =
       'Add Player'; // Renamed to avoid clash if needed
 
+
+
+  static const double smallDeviceBreakpoint = 600.0; // Adjust as needed
+
   static const String csvUploadResultTitle = 'CSV Upload Result';
   static const String csvUploadCancelledTitle = 'CSV Upload Cancelled';
   static const String csvUploadCancelledMessage = 'No CSV file selected.';

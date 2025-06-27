@@ -65,16 +65,33 @@ class HomeScreen extends GetView<HomeController> {
           ),
           const SizedBox(height: 16),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Text(
-              'My Teams',
-              style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(
+                  'My Teams',
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
-            ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    controller.deleteAllData();
+                  },
+                ),
+              ),
+            ],
           ),
+
           const SizedBox(height: 16),
 
           Expanded(
@@ -129,15 +146,15 @@ class HomeScreen extends GetView<HomeController> {
       floatingActionButton: Obx(
         () => FloatingActionButton.extended(
           onPressed:
-              controller.isSyncing.value
+              controller.isProcessingLargeOperation.value
                   ? null
                   : () => controller.syncDataFromSheets(),
           label:
-              controller.isSyncing.value
+              controller.isProcessingLargeOperation.value
                   ? const Text('Syncing...')
                   : const Text('Sync from Sheet'),
           icon:
-              controller.isSyncing.value
+              controller.isProcessingLargeOperation.value
                   ? const SizedBox(
                     width: 20,
                     height: 20,

@@ -15,7 +15,7 @@ class PlayersHeadingSection extends GetView<TeamDetailsController> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallDevice = screenWidth < AppConstants.smallDeviceBreakpoint;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Obx(() {
         final List<String> jerseyNumbers = controller.uniqueJerseyNumbers;
         final bool showDropdown =
@@ -33,8 +33,6 @@ class PlayersHeadingSection extends GetView<TeamDetailsController> {
                 color: Colors.black,
                 fontSize: isSmallDevice ? 16 : 24,
               ),
-
-
             ),
             if (showDropdown) // Conditionally show the dropdown
               DropdownButton<String?>(
@@ -44,22 +42,22 @@ class PlayersHeadingSection extends GetView<TeamDetailsController> {
                   controller.setJerseyNumberFilter(newValue);
                 },
 
-
                 items: [
                   const DropdownMenuItem<String?>(
                     value: null, // Represents "All"
-                    child: Text('All Jersey Numbers'),
+                    child: Text('All Jersey Numbers',style: TextStyle(fontSize: 14),),
                   ),
                   ...jerseyNumbers.map<DropdownMenuItem<String>>((
                     String number,
                   ) {
+
+
                     return DropdownMenuItem<String>(
                       value: number,
-                      child: Text('Jersey #$number'),
+                      child: Text('Jersey #$number',style: TextStyle(fontSize: 12),),
                     );
                   }).toList(),
                 ],
-
               ),
           ],
         );

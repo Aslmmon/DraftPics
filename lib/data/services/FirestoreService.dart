@@ -28,6 +28,53 @@ class FirestoreService {
         );
   }
 
+
+  Future<void> deleteAllTeamsAndPlayers() async {
+    try {
+      // Get all team documents
+      final QuerySnapshot<Map<String, dynamic>> teamsSnapshot =
+      await _db.collection(teamsCollections).get();
+
+      if (teamsSnapshot.docs.isEmpty) {
+        print('No teams found to delete.');
+        return;
+      }
+
+      // Initialize a WriteBatch for efficient deletion
+      WriteBatch batch = _db.batch();
+
+      // Iterate through each team document
+      for (var teamDoc in teamsSnapshot.docs) {
+        final teamId = teamDoc.id;
+
+        // 1. Delete all players for the current team
+        final QuerySnapshot<Map<String, dynamic>> playersSnapshot =
+        await _db.collection(teamsCollections).doc(teamId).collection(playersSubCollectionName).get();
+
+        if (playersSnapshot.docs.isNotEmpty) {
+          print('Deleting ${playersSnapshot.docs.length} players for team: $teamId');
+          for (var playerDoc in playersSnapshot.docs) {
+            batch.delete(playerDoc.reference); // Add player to batch for deletion
+          }
+        } else {
+          print('No players found for team: $teamId');
+        }
+
+        // 2. Delete the team document itself
+        batch.delete(teamDoc.reference); // Add team to batch for deletion
+        print('Adding team "$teamId" to batch for deletion.');
+      }
+
+      // Commit the batch writes
+      await batch.commit();
+      print('Successfully deleted all teams and their players.');
+    } catch (e) {
+      print('Error deleting teams and players: $e');
+      // You might want to throw the error or handle it more robustly
+      rethrow;
+    }
+  }
+
   Future<Team?> getTeamById(String teamId) async {
     final doc = await _db.collection(teamsCollections).doc(teamId).get();
     return doc.exists ? Team.fromFirestore(doc) : null;
@@ -152,10 +199,7 @@ class FirestoreService {
   }
 
   Future<void> deleteTeams(String teamId, String playerId) async {
-    await _db
-        .collection(teamsCollections)
-        .doc(teamId)
-        .delete();
+    await _db.collection(teamsCollections).doc(teamId).delete();
   }
 
   // MODIFIED: uploadPlayersFromCsv now targets the specific team's subcollection for batch writes

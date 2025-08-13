@@ -65,6 +65,20 @@ class PlayerFormInputSection extends GetView<PlayerFormController> {
           keyboardType: TextInputType.text,
           decoration: customInputDecoration,
         ),
+        const SizedBox(height: 8),
+        Text(
+          AppConstants.teamLabel, // Use constant
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        ReusableTextField(
+          controller: controller.teamNameController,
+          hintText: AppConstants.enterPositionHint, // Use constant
+          keyboardType: TextInputType.text,
+          decoration: customInputDecoration,
+        ),
       ],
     );
   }

@@ -28,12 +28,11 @@ class FirestoreService {
         );
   }
 
-
   Future<void> deleteAllTeamsAndPlayers() async {
     try {
       // Get all team documents
       final QuerySnapshot<Map<String, dynamic>> teamsSnapshot =
-      await _db.collection(teamsCollections).get();
+          await _db.collection(teamsCollections).get();
 
       if (teamsSnapshot.docs.isEmpty) {
         print('No teams found to delete.');
@@ -49,12 +48,20 @@ class FirestoreService {
 
         // 1. Delete all players for the current team
         final QuerySnapshot<Map<String, dynamic>> playersSnapshot =
-        await _db.collection(teamsCollections).doc(teamId).collection(playersSubCollectionName).get();
+            await _db
+                .collection(teamsCollections)
+                .doc(teamId)
+                .collection(playersSubCollectionName)
+                .get();
 
         if (playersSnapshot.docs.isNotEmpty) {
-          print('Deleting ${playersSnapshot.docs.length} players for team: $teamId');
+          print(
+            'Deleting ${playersSnapshot.docs.length} players for team: $teamId',
+          );
           for (var playerDoc in playersSnapshot.docs) {
-            batch.delete(playerDoc.reference); // Add player to batch for deletion
+            batch.delete(
+              playerDoc.reference,
+            ); // Add player to batch for deletion
           }
         } else {
           print('No players found for team: $teamId');
@@ -232,6 +239,9 @@ class FirestoreService {
       final int positionIndex = headers.indexWhere(
         (h) => h.toLowerCase() == 'jersey',
       );
+      final int teamIndex = headers.indexWhere(
+        (h) => h.toLowerCase() == 'team',
+      );
       final int isCapturedIndex = headers.indexWhere(
         (h) => h.toLowerCase() == 'iscaptured',
       );
@@ -270,6 +280,8 @@ class FirestoreService {
           final String firstName = row[firstNameIndex]?.toString().trim() ?? '';
           final String lastName = row[lastNameIndex]?.toString().trim() ?? '';
           final String position = row[positionIndex]?.toString().trim() ?? '';
+          final String team = row[teamIndex]?.toString().trim() ?? '';
+
           final String isCapturedString =
               row[isCapturedIndex]?.toString().trim().toLowerCase() ?? '';
 
@@ -307,6 +319,7 @@ class FirestoreService {
             // Let Firestore generate the ID when setting
             firstName: firstName,
             lastName: lastName,
+            team: team,
             jerseyNumber: position,
             teamId: teamId,
             // Store teamId as a field for data integrity if needed
@@ -357,8 +370,9 @@ class FirestoreService {
     required String teamFirestoreId,
     required String originalFirstName,
     required String originalLastName,
-    required String
-    originalJerseyNumber, // Added this back for clarity in sheet lookup
+    required String originalJerseyNumber, // Added this back for clarity in sheet lookup
+    required String originalTeam, // Added this back for clarity in sheet lookup
+
     required Map<String, dynamic> updatedFields,
   }) async {
     final Map<String, String> params = {
@@ -367,6 +381,7 @@ class FirestoreService {
       'originalFirstName': originalFirstName,
       'originalLastName': originalLastName,
       'originalJerseyNumber': originalJerseyNumber,
+      'originalTeam': originalTeam,
       // Ensure this is sent for lookup
       'updatedFields': jsonEncode(updatedFields),
     };

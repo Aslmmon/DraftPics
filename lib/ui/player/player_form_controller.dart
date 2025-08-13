@@ -18,6 +18,8 @@ class PlayerFormController extends GetxController {
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController jerseyNumberController =
       TextEditingController(); // Renamed for clarity
+  final TextEditingController teamNameController =
+      TextEditingController(); // Renamed for clarity
 
   // Observables for dropdowns/checkboxes
   final Rx<Gender> selectedGender = Gender.male.obs;
@@ -74,6 +76,8 @@ class PlayerFormController extends GetxController {
     firstNameController.text = player.firstName;
     lastNameController.text = player.lastName;
     jerseyNumberController.text = player.jerseyNumber;
+    teamNameController.text = player.team;
+
     // selectedGender.value = player.gender; // Uncomment and implement if gender is part of PlayerModel
     isCaptured.value = player.isCaptured;
     _teamId = player.teamId; // Ensure teamId is set for editing context
@@ -98,6 +102,7 @@ class PlayerFormController extends GetxController {
         // Use existing ID if editing
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
+        team: teamNameController.text.trim(),
         jerseyNumber: jerseyNumberController.text.trim(),
         isCaptured: isCaptured.value,
         teamId: _teamId!,
@@ -129,6 +134,7 @@ class PlayerFormController extends GetxController {
           originalFirstName: _playerToEdit!.firstName,
           originalLastName: _playerToEdit!.lastName,
           originalJerseyNumber: _playerToEdit!.jerseyNumber,
+          originalTeam: _playerToEdit!.team,
           // Pass original jersey number for lookup
           updatedFields: changedFields,
         );
@@ -157,6 +163,9 @@ class PlayerFormController extends GetxController {
     }
     if (updatedPlayer.jerseyNumber != _playerToEdit!.jerseyNumber) {
       changedFields['jerseyNumber'] = updatedPlayer.jerseyNumber;
+    }
+    if (updatedPlayer.team != _playerToEdit!.team) {
+      changedFields['team'] = updatedPlayer.team;
     }
     if (updatedPlayer.isCaptured != _playerToEdit!.isCaptured) {
       changedFields['isCaptured'] = updatedPlayer.isCaptured;

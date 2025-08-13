@@ -15,6 +15,8 @@ class AppConstants {
   // Section Headings / Field Labels
   static const String firstNameLabel = 'First Name';
   static const String lastNameLabel = 'Last Name';
+  static const String teamLabel = 'Team';
+
   static const String positionLabel = 'Jersey Number';
   static const String genderLabel = 'Gender';
   static const String capturedStatusLabel = 'Photography Status';
@@ -106,5 +108,7 @@ class AppConstants {
   static const String playerName = 'Name';
 
   static const String appsScriptWebAppUrl =
-      "https://script.google.com/macros/s/AKfycbzMD0vU8hw9KKUHpbxRCoTi6rl0ENjTYCDJvI_wcZZJ52c6RGmNzg3ahwW4yWeB2C-L/exec";
+      "https://script.google.com/macros/s/AKfycbwqXd7kr09ek7f88XYhSmhjqBxsIYDKjFZ0bdXyj3JQTL2sFF0nSM3bSvXxyrxK115H/exec";
+
+
 }

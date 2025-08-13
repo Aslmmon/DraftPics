@@ -8,6 +8,7 @@ class Player {
   String firstName;
   String lastName;
   String jerseyNumber;
+  String team;
 
   // Gender gender; // Add gender field
   bool isCaptured; // Add isCaptured field
@@ -19,6 +20,7 @@ class Player {
     required this.firstName,
     required this.lastName,
     required this.jerseyNumber,
+    required this.team,
     this.isCaptured = false, // Default to false
     required this.teamId,
     this.creationTime,
@@ -32,6 +34,7 @@ class Player {
       firstName: data?['firstName'] as String,
       lastName: data?['lastName'] as String,
       jerseyNumber: data?['jerseyNumber'] as String,
+      team: data?['team'] as String,
       isCaptured: data?['isCaptured'] as bool? ?? false,
       teamId: data?['teamId'] as String,
       creationTime: (data?['creationTime'] as Timestamp?)?.toDate(),
@@ -44,6 +47,7 @@ class Player {
       'firstName': firstName,
       'lastName': lastName,
       'jerseyNumber': jerseyNumber,
+      'team': team,
       'isCaptured': isCaptured,
       'teamId': teamId,
       'creationTime': creationTime ?? FieldValue.serverTimestamp(),
@@ -54,6 +58,7 @@ class Player {
   String toString() {
     return 'Player: $firstName $lastName,\n'
         'Position: $jerseyNumber,\n'
+        'team: $team,\n'
         'Captured: ${isCaptured ? "Yes," : "No,"}\n';
   }
 }

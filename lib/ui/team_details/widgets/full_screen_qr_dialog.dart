@@ -11,6 +11,9 @@ class FullScreenQrDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isSmallDevice = screenWidth < AppConstants.smallDeviceBreakpoint;
+
     // Determine a suitable size for the QR code to fill most of the screen
     final double dialogSize =
         MediaQuery.of(context).size.shortestSide *
@@ -36,7 +39,7 @@ class FullScreenQrDialog extends StatelessWidget {
             Align(
               alignment: Alignment.topRight,
               child: IconButton(
-                icon: const Icon(Icons.close, size: 30),
+                icon: Icon(Icons.close, size: isSmallDevice ? 20 : 30),
                 onPressed: () {
                   Get.back(); // Close the dialog
                 },
@@ -49,7 +52,7 @@ class FullScreenQrDialog extends StatelessWidget {
                 child: QrImageView(
                   data: player.toString(),
                   version: QrVersions.auto,
-                  size: dialogSize * 0.8,
+                  size: dialogSize * 0.5,
                   // Make QR slightly smaller than container to allow for padding
                   errorStateBuilder: (cxt, err) {
                     return const Center(
@@ -68,11 +71,11 @@ class FullScreenQrDialog extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               "${AppConstants.playerName} is : ${"${player.firstName} ${player.lastName}"}"
+              "\n${AppConstants.teamLabel} : ${player.team}"
               "\n${AppConstants.positionLabel} : ${player.jerseyNumber}\n"
               " ${AppConstants.capturedStatusHeading} : ${player.isCaptured}",
               style: Get.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontSize: isSmallDevice ? 12 : 22,
               ),
             ),
           ],

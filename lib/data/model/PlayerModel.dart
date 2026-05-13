@@ -56,7 +56,7 @@ class Player {
 
   @override
   String toString() {
-    return 'Player: $firstName $lastName,\n'
+    return '$firstName $lastName,\n'
         'Position: $jerseyNumber,\n'
         'team: $team,\n'
         'Captured: ${isCaptured ? "Yes," : "No,"}\n';

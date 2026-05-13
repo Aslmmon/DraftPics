@@ -3,7 +3,7 @@ import 'package:draftpics/utils/app_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
+import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart' hide ReusableAlertDialog;
 
 import '../../../data/model/TeamModel.dart';
 import '../controllers/home_controller.dart';
@@ -106,11 +106,11 @@ class TeamListItem extends StatelessWidget {
                     noText: 'Cancel',
                     onYesPressed: () async {
                       await controller.deleteTeam(team);
-                      Get.back();
+                     // Get.back();
                     },
-                    onNoPressed: () {
-                      Get.back();
-                    },
+                    onNoPressed: () async {
+                     // Get.back();
+                    }, context: Get.context!,
                   );
                 },
                 icon: Icon(

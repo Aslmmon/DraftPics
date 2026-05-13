@@ -70,7 +70,7 @@ class FullScreenQrDialog extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "${AppConstants.playerName} is : ${"${player.firstName} ${player.lastName}"}"
+              "${AppConstants.playerName}  : ${"${player.firstName} ${player.lastName}"}"
               "\n${AppConstants.teamLabel} : ${player.team}"
               "\n${AppConstants.positionLabel} : ${player.jerseyNumber}\n"
               " ${AppConstants.capturedStatusHeading} : ${player.isCaptured}",

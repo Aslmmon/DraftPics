@@ -82,7 +82,9 @@ class HomeController extends GetxController {
   Future<void> deleteAllData() async {
     if (_isOperationInProgress()) return;
 
+
     final bool? confirm = await _showConfirmationDialog(
+      Get.context!,
       'Confirm Deletion',
       'Are you sure you want to delete ALL teams and ALL players? This action cannot be undone.',
       confirmButtonText: 'Delete All',
@@ -258,32 +260,76 @@ class HomeController extends GetxController {
   }
 
 
-  /// Shows a generic confirmation dialog.
+  // /// Shows a generic confirmation dialog.
+  // Future<bool?> _showConfirmationDialog(
+  //     String title,
+  //     String content, {
+  //       String confirmButtonText = 'Confirm',
+  //       Color confirmButtonColor = Colors.blue,
+  //     }) async {
+  //   return await Get.dialog<bool>(
+  //     AlertDialog(
+  //       title: Text(title),
+  //       content: Text(content),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Get.back(result: false),
+  //           child: const Text('Cancel'),
+  //         ),
+  //         ElevatedButton(
+  //           onPressed: () => Get.back(result: true),
+  //           style: ElevatedButton.styleFrom(backgroundColor: confirmButtonColor),
+  //           child: Text(
+  //             confirmButtonText,
+  //             style: const TextStyle(color: Colors.white),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Future<bool?> _showConfirmationDialog(
+      BuildContext context,
       String title,
       String content, {
         String confirmButtonText = 'Confirm',
         Color confirmButtonColor = Colors.blue,
       }) async {
-    return await Get.dialog<bool>(
-      AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Get.back(result: true),
-            style: ElevatedButton.styleFrom(backgroundColor: confirmButtonColor),
-            child: Text(
-              confirmButtonText,
-              style: const TextStyle(color: Colors.white),
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+
+          content: Text(content),
+
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Cancel'),
             ),
-          ),
-        ],
-      ),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+
+              style: ElevatedButton.styleFrom(
+                backgroundColor: confirmButtonColor,
+              ),
+
+              child: Text(
+                confirmButtonText,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

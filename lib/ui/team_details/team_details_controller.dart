@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
-import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart';
+import 'package:reutilizacao/ui/components/ReusableAlertDialog.dart' hide ReusableAlertDialog;
 import '../../data/model/PlayerModel.dart';
 import '../../data/model/TeamModel.dart';
 import '../../data/services/FirestoreService.dart';
@@ -94,6 +94,7 @@ class TeamDetailsController extends GetxController {
 
   Future<void> deletePlayer(Player player) async {
     ReusableAlertDialog.show(
+      context: Get.context!,
       title: AppConstants.deletePlayerTitle,
       content:
           '${AppConstants.deletePlayerContent}"${player.firstName} ${player.lastName}"? This action cannot be undone.',
@@ -102,19 +103,21 @@ class TeamDetailsController extends GetxController {
       onYesPressed: () async {
         try {
           await _firestoreService.deletePlayer(player.teamId, player.id!);
-          Get.snackbar(
-            'Success',
-            'Player "${player.firstName} ${player.lastName}" deleted successfully!',
-            snackPosition: SnackPosition.BOTTOM,
-          );
+          // if (Get.isSnackbarOpen == false) {
+          //   Get.snackbar(
+          //     'Success',
+          //     'Player "${player.firstName} ${player.lastName}" deleted successfully!',
+          //     snackPosition: SnackPosition.BOTTOM,
+          //   );
+          // }
         } catch (e) {
-          Get.snackbar(
-            'Error',
-            'Failed to delete player: ${e.toString()}',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Get.theme.colorScheme.error,
-            colorText: Get.theme.colorScheme.onError,
-          );
+          // Get.snackbar(
+          //   'Error',
+          //   'Failed to delete player: ${e.toString()}',
+          //   snackPosition: SnackPosition.BOTTOM,
+          //   backgroundColor: Get.theme.colorScheme.error,
+          //   colorText: Get.theme.colorScheme.onError,
+          // );
           print('Error deleting player: $e');
         }
       },

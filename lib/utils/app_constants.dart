@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
-
-
 class AppConstants {
   // Button Texts
   static const String addPlayerButtonForm =
@@ -117,8 +115,12 @@ class AppConstants {
   static const String playerName = 'Name';
 
   static const String appsScriptWebAppUrl =
-      "https://script.google.com/macros/s/AKfycbwqXd7kr09ek7f88XYhSmhjqBxsIYDKjFZ0bdXyj3JQTL2sFF0nSM3bSvXxyrxK115H/exec";
+      "https://script.google.com/macros/s/AKfycbw8H4NfGum1eeLhwUSZfa4e_wB1iVm3gaCUKf3DAGxbaxvqYg5TrBCWJ30Rr_dUAf0T/exec";
+
+
 }
+
+// old one 21/05/2026 :       "https://script.google.com/macros/s/AKfycbwqXd7kr09ek7f88XYhSmhjqBxsIYDKjFZ0bdXyj3JQTL2sFF0nSM3bSvXxyrxK115H/exec";
 
 
 class ReusableAlertDialog extends StatefulWidget {
@@ -154,25 +156,24 @@ class ReusableAlertDialog extends StatefulWidget {
     await showDialog(
       context: context,
       barrierDismissible: dismissible,
-      builder: (_) => ReusableAlertDialog(
-        title: title,
-        content: content,
-        onYesPressed: onYesPressed,
-        onNoPressed: onNoPressed,
-        yesText: yesText,
-        noText: noText,
-        dismissible: dismissible,
-      ),
+      builder:
+          (_) => ReusableAlertDialog(
+            title: title,
+            content: content,
+            onYesPressed: onYesPressed,
+            onNoPressed: onNoPressed,
+            yesText: yesText,
+            noText: noText,
+            dismissible: dismissible,
+          ),
     );
   }
 
   @override
-  State<ReusableAlertDialog> createState() =>
-      _ReusableAlertDialogState();
+  State<ReusableAlertDialog> createState() => _ReusableAlertDialogState();
 }
 
-class _ReusableAlertDialogState
-    extends State<ReusableAlertDialog> {
+class _ReusableAlertDialogState extends State<ReusableAlertDialog> {
   bool isLoading = false;
 
   @override
@@ -180,15 +181,11 @@ class _ReusableAlertDialogState
     final textTheme = Theme.of(context).textTheme;
 
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
 
       title: Text(
         widget.title,
-        style: textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+        style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
 
@@ -202,41 +199,41 @@ class _ReusableAlertDialogState
 
       actions: [
         TextButton(
-          onPressed: isLoading
-              ? null
-              : () async {
-            if (widget.onNoPressed != null) {
-              await widget.onNoPressed!();
-            }
+          onPressed:
+              isLoading
+                  ? null
+                  : () async {
+                    if (widget.onNoPressed != null) {
+                      await widget.onNoPressed!();
+                    }
 
-            if (mounted) {
-              Navigator.of(context).pop();
-            }
-          },
+                    if (mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  },
           child: Text(
             widget.noText,
-            style: textTheme.titleMedium?.copyWith(
-              color: Colors.grey[700],
-            ),
+            style: textTheme.titleMedium?.copyWith(color: Colors.grey[700]),
           ),
         ),
 
         ElevatedButton(
-          onPressed: isLoading
-              ? null
-              : () async {
-            setState(() {
-              isLoading = true;
-            });
+          onPressed:
+              isLoading
+                  ? null
+                  : () async {
+                    setState(() {
+                      isLoading = true;
+                    });
 
-            try {
-              await widget.onYesPressed();
-            } finally {
-              if (mounted) {
-                Navigator.of(context).pop();
-              }
-            }
-          },
+                    try {
+                      await widget.onYesPressed();
+                    } finally {
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
 
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
@@ -244,27 +241,23 @@ class _ReusableAlertDialogState
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 12,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
 
-          child: isLoading
-              ? const SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white,
-            ),
-          )
-              : Text(
-            widget.yesText,
-            style: textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-            ),
-          ),
+          child:
+              isLoading
+                  ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                  : Text(
+                    widget.yesText,
+                    style: textTheme.titleMedium?.copyWith(color: Colors.white),
+                  ),
         ),
       ],
     );
@@ -378,6 +371,3 @@ class _ReusableAlertDialogState
 //     );
 //   }
 // }
-
-
-

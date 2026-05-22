@@ -115,7 +115,7 @@ class AppConstants {
   static const String playerName = 'Name';
 
   static const String appsScriptWebAppUrl =
-      "https://script.google.com/macros/s/AKfycbw8H4NfGum1eeLhwUSZfa4e_wB1iVm3gaCUKf3DAGxbaxvqYg5TrBCWJ30Rr_dUAf0T/exec";
+      "https://script.google.com/macros/s/AKfycbzFfRw4Aq3jmsRsVehGM-SvME8jOXEKbCsLMuXtufOdwKe7p55kg58JdMUpKbOghwVz/exec";
 
 
 }
